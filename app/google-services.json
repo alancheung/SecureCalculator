@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "440473414608",
+    "firebase_url": "https://securecalculator-dadc8.firebaseio.com",
+    "project_id": "securecalculator-dadc8",
+    "storage_bucket": "securecalculator-dadc8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:440473414608:android:c059e6a0a6768f20",
+        "android_client_info": {
+          "package_name": "edu.umd.cs.securecalculator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "440473414608-8nhv1ef701a2kn1eg5qmhc95m7ak4b2u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGNOgRlN0Obf1ykaD4oMWXEHTneIdTL6g"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
