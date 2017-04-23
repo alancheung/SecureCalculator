@@ -1,3 +1,8 @@
+local.properties
+.idea/workspace.xml
+app/libs/
+build/android-profile/profile-2017-04-07-22-32-55-261.rawproto
+build/android-profile/profile-2017-04-07-22-33-11-310.rawproto
 *.iml
 .gradle
 /local.properties
@@ -7,3 +12,4 @@
 /build
 /captures
 .externalNativeBuild
+.gradle/3.3/tasks/
