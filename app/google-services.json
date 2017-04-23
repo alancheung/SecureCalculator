@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:440473414608:android:c059e6a0a6768f20",
         "android_client_info": {
-          "package_name": "edu.umd.cs.securecalculator"
+          "package_name": "edu.umd.cs.SecureCalculator"
         }
       },
       "oauth_client": [
@@ -31,6 +31,50 @@
         "appinvite_service": {
           "status": 1,
           "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:440473414608:android:40de2d38b55e91f4",
+        "android_client_info": {
+          "package_name": "edu.umd.cs.securecalculator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "440473414608-87qhjdbon97dt7l3f5jnqrtujagkjcj7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.umd.cs.securecalculator",
+            "certificate_hash": "1f875bceaf9af0f68a3c17e741484606523ea0bb"
+          }
+        },
+        {
+          "client_id": "440473414608-8nhv1ef701a2kn1eg5qmhc95m7ak4b2u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGNOgRlN0Obf1ykaD4oMWXEHTneIdTL6g"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "440473414608-8nhv1ef701a2kn1eg5qmhc95m7ak4b2u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2
