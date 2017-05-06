@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_item_request_help"
+        android:orderInCategory="100"
+        android:title="@string/request_help" />
+
+    <item
+        android:id="@+id/menu_item_log_out"
+        android:orderInCategory="100"
+        android:title="@string/log_out" />
+
+</menu>

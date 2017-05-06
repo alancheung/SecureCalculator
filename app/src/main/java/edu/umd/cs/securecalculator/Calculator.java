@@ -1,24 +1,29 @@
 package edu.umd.cs.securecalculator;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class Calculator extends Activity {
+public class Calculator extends AppCompatActivity {
 
 	private final String SDK_VERSION = "1";
 	private final int MENUITEM_CLOSE = 300;
@@ -82,6 +87,10 @@ public class Calculator extends Activity {
 	public static final String DIRECTORY_ID_EXTRA = "directoryID";
 	public static final String CLASS_ID_EXTRA = "classID";
 
+	//FireBase
+	private FirebaseDatabase fireDB;
+	private DatabaseReference database;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -97,6 +106,10 @@ public class Calculator extends Activity {
 		initControls();
 		initScreenLayout();
 		reset();
+
+		// Init Firebase DB
+		fireDB = FirebaseDatabase.getInstance();
+		database = fireDB.getReference();
 
 	}
 
@@ -529,20 +542,28 @@ public class Calculator extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, 1, MENUITEM_CLOSE, "Close");
-
-		return super.onCreateOptionsMenu(menu);
+		super.onCreateOptionsMenu(menu);
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.calculator,menu);
+		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent called = getIntent();
+		String cID = called.getStringExtra(CLASS_ID_EXTRA);
+		String dID = called.getStringExtra(DIRECTORY_ID_EXTRA);
 		switch (item.getItemId()) {
-		case MENUITEM_CLOSE:
-			finish();
-			break;
+			case R.id.menu_item_log_out:
+				database.child(FireDatabaseConstants.DB_CLASS_CHILD).child(cID).child(dID).child(FireDatabaseConstants.USER_STATUS).setValue("LOGGED_OUT");
+				finish();
+				return true;
+			case R.id.menu_item_request_help:
+				database.child(FireDatabaseConstants.DB_CLASS_CHILD).child(cID).child(dID).child(FireDatabaseConstants.USER_STATUS).setValue("HELP");
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
 		}
-
-		return super.onOptionsItemSelected(item);
 	}
 
 	private void handleEquals(int newOperator) {

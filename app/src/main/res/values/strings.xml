@@ -17,5 +17,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="request_help">Request Help</string>
+    <string name="log_out">Log Out</string>
 
 </resources>

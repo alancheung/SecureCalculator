@@ -1,8 +1,8 @@
 package edu.umd.cs.securecalculator;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -23,7 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 /**
  * A login screen that offers login via email/classID.
  */
-public class LoginActivity extends Activity{
+public class LoginActivity extends AppCompatActivity{
     private final String TAG = getClass().getSimpleName();
     public static final String DB_USER_CHILD = "directoryID";
     public static final String DB_CLASS_CHILD = "classID";
