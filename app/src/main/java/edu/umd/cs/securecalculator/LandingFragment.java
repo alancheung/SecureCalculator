@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
@@ -19,10 +20,17 @@ import com.google.firebase.database.ValueEventListener;
 public class LandingFragment extends Fragment {
     LinearLayout okL, helpL, outofAppL;
     private LoginActivity loginActivity;
+    // Firebase Database
+    private FirebaseDatabase fireDB;
+    private DatabaseReference database;
 
     @Override
     public void onCreate(Bundle save){
         super.onCreate(save);
+
+        // Init Firebase DB
+        fireDB = FirebaseDatabase.getInstance();
+        database = fireDB.getReference();
     }
 
     @Override
@@ -35,7 +43,7 @@ public class LandingFragment extends Fragment {
 
         //get all information
         //change "CMSC436-0101" ; get actual firebase
-        FirebaseDatabase.getInstance().getReference().child("CMSC436-0101")
+        database.child("CMSC436-0101")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
