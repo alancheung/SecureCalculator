@@ -555,11 +555,19 @@ public class Calculator extends AppCompatActivity {
 		String dID = called.getStringExtra(DIRECTORY_ID_EXTRA);
 		switch (item.getItemId()) {
 			case R.id.menu_item_log_out:
-				database.child(FireDatabaseConstants.DB_CLASS_CHILD).child(cID).child(dID).child(FireDatabaseConstants.USER_STATUS).setValue("LOGGED_OUT");
+				database.child(FireDatabaseConstants.DB_CLASS_CHILD)
+						.child(cID)
+						.child(FireDatabaseConstants.DB_USER_CHILD)
+						.child(dID)
+						.child(FireDatabaseConstants.USER_STATUS).setValue("LOGGED_OUT");
 				finish();
 				return true;
 			case R.id.menu_item_request_help:
-				database.child(FireDatabaseConstants.DB_CLASS_CHILD).child(cID).child(dID).child(FireDatabaseConstants.USER_STATUS).setValue("HELP");
+				database.child(FireDatabaseConstants.DB_CLASS_CHILD)
+						.child(cID)
+						.child(FireDatabaseConstants.DB_USER_CHILD)
+						.child(dID)
+						.child(FireDatabaseConstants.USER_STATUS).setValue("HELP");
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
