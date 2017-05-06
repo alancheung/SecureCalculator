@@ -1,5 +1,6 @@
 package edu.umd.cs.securecalculator;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -54,13 +55,16 @@ public class LandingFragment extends Fragment {
 
                             final TextView currentUsername = new TextView(getActivity());
                             currentUsername.setText(student.getUsername());
-                            if(student.getStatus() == 0){
+                            if(student.getStatus() == 0){//status is ok
+                                currentUsername.setTextColor(Color.GREEN);
                                 okL.addView(currentUsername);
                             }
-                            else if(student.getStatus() == 1){
+                            else if(student.getStatus() == 1){//status is help
+                                currentUsername.setTextColor(Color.YELLOW);
                                 helpL.addView(currentUsername);
                             }
-                            if(student.getStatus() == 2){
+                            if(student.getStatus() == 2){//status is other
+                                currentUsername.setTextColor(Color.RED);
                                 outofAppL.addView(currentUsername);
                             }
                             currentUsername.setOnClickListener(new View.OnClickListener(){
