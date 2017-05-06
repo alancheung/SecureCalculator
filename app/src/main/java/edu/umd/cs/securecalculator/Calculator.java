@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -32,10 +33,15 @@ public class Calculator extends AppCompatActivity {
 	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 	private GestureDetector gestureDetector;
 
+	// Lifecycle variables
 	private List<String> lifeCycleLog;
 	private boolean userLeftApp = false;
 	private String leftTime = "";
 	private String returnTime = "";
+
+	// User variables
+	private String directoryID = "";
+	private String classID = "";
 
 	/*
 	 * Edit Text and Button object initialization for simple calculator design.
@@ -98,8 +104,22 @@ public class Calculator extends AppCompatActivity {
 		setTheme(android.R.style.Theme_Black);
 		setContentView(R.layout.calculator);
 
+		// Get user information from intent
+		Intent intent = getIntent();
+		directoryID =  String.valueOf(intent.getExtras().get(DIRECTORY_ID_EXTRA));
+		classID = String.valueOf(intent.getExtras().get(CLASS_ID_EXTRA));
+
+
+        // Init Firebase DB
+        fireDB = FirebaseDatabase.getInstance();
+        database = fireDB.getReference();
+
+		modifyUserStatus("OK");
+
 		lifeCycleLog = new ArrayList<String>();
-		lifeCycleLog.add("Calculator view created. (onCreate)");
+		lifeCycleLog.add("onCreate: Calculator view created.");
+
+
 
 		this.setTitle(" ");
 
@@ -107,9 +127,7 @@ public class Calculator extends AppCompatActivity {
 		initScreenLayout();
 		reset();
 
-		// Init Firebase DB
-		fireDB = FirebaseDatabase.getInstance();
-		database = fireDB.getReference();
+
 
 	}
 
@@ -732,13 +750,13 @@ public class Calculator extends AppCompatActivity {
 	@Override
 	public void onStart() {
 		super.onStart();
-		lifeCycleLog.add("Calculator visible to users. (onStart)");
+		lifeCycleLog.add("onStart: Calculator visible to user.");
 	}
 
 	@Override
 	public void onRestart() {
 		super.onRestart();
-		lifeCycleLog.add("User returns to SecureCalculator. (onRestart)");
+		lifeCycleLog.add("onRestart: User returns to SecureCalculator.");
 	}
 
 	@Override
@@ -749,17 +767,17 @@ public class Calculator extends AppCompatActivity {
 			userLeftApp = false;
 
 			returnTime = getCurrentTime();
-			lifeCycleLog.add("User has returned to the app at " + returnTime + ". (onResume)");
+			lifeCycleLog.add("onResume: User has returned to the app at " + returnTime + ".");
 		}
 		else {
-			lifeCycleLog.add("User can interact with app. (onResume)");
+			lifeCycleLog.add("onResume: User can interact with app.");
 		}
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		lifeCycleLog.add("User is leaving SecureCalculator. (onPause)");
+		lifeCycleLog.add("onPause: User is leaving SecureCalculator.");
 	}
 
 	@Override
@@ -767,22 +785,37 @@ public class Calculator extends AppCompatActivity {
 		super.onStop();
 
 		userLeftApp = true;
-
 		leftTime = getCurrentTime();
 
-		lifeCycleLog.add("User has left SecureCalculator at " + leftTime + ". (onStop)");
+		modifyUserStatus("onStop");
+
+		lifeCycleLog.add("onStop: User has left SecureCalculator at " + leftTime + ".");
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		lifeCycleLog.add("User has quit the app. (onDestroy)");
+
+		modifyUserStatus("LOGGED_OUT");
+
+		lifeCycleLog.add("onDestroy: User has quit the app.");
 	}
 
+	// Gets the current time and returns it in the format: hour:minute:second.millisecond
 	private String getCurrentTime() {
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
 		System.out.println(sdf.format(cal.getTime()).toString());
 		return(sdf.format(cal.getTime()));
 	}
+
+	// Modifies the users status in the database - called in lifecycle methods
+	private void modifyUserStatus(String status) {
+		database.child(FireDatabaseConstants.DB_CLASS_CHILD)
+				.child(classID)
+				.child(directoryID)
+				.child(FireDatabaseConstants.USER_STATUS)
+				.setValue(status);
+	}
+
 }
