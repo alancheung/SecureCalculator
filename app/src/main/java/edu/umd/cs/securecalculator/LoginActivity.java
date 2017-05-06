@@ -118,11 +118,11 @@ public class LoginActivity extends Activity{
             database.child(DB_CLASS_CHILD).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    // TODO yeah this broke
                     if (dataSnapshot.hasChild(classID) &&
                             dataSnapshot.child(classID).hasChild(directoryID)) {
                         Log.d(TAG, directoryID + " exists in " + classID);
                     } else {
+                        UserStatus status = new UserStatus();
                         database.child(DB_CLASS_CHILD).child(classID).child(directoryID).setValue(true);
                         Log.d(TAG, "Registered user " + mDirectoryID + " with classID " + classID);
                         Toast.makeText(LoginActivity.this, "New user added to class " + classID, Toast.LENGTH_SHORT)
@@ -147,6 +147,27 @@ public class LoginActivity extends Activity{
     private boolean isClassIDValid(String classID) {
         //TODO does this class exists yet?
         return true;
+    }
+
+    private class UserStatus{
+        private boolean isOkay, isInApp;
+        UserStatus(){
+            isOkay = true;
+            isInApp = true;
+        }
+
+        boolean isOkay(){
+            return isOkay;
+        }
+        boolean isInApp(){
+            return isInApp;
+        }
+        void setOkay(boolean in){
+            isOkay = in;
+        }
+        void setInApp(boolean in){
+            isInApp = in;
+        }
     }
 }
 
