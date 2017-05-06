@@ -17,4 +17,8 @@
     <string name="request_help">Request Help</string>
     <string name="log_out">Log Out</string>
 
+    <string name="ok_label">OK</string>
+    <string name="help_label">HELP</string>
+    <string name="other_label">OTHER</string>
+
 </resources>
