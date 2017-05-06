@@ -14,9 +14,6 @@
     <string name="error_invalid_directoryID">This directoryID is invalid</string>
     <string name="error_invalid_classID">Class ID is invalid</string>
     <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
     <string name="request_help">Request Help</string>
     <string name="log_out">Log Out</string>
 

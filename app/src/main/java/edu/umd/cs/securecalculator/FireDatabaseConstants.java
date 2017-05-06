@@ -5,8 +5,13 @@ package edu.umd.cs.securecalculator;
  */
 
 public class FireDatabaseConstants {
-    public static final String DB_USER_CHILD = "directoryID";
-    public static final String DB_CLASS_CHILD = "classID";
+    public static final String DB_USER_CHILD = "students";
+    public static final String DB_CLASS_CHILD = "classes";
+    public static final String DB_META_CHILD = "metadata";
+
     public static final String USER_STATUS = "status";
     public static final String USER_LOG = "log";
+
+    public static final String META_USER = "authorized_user"; // creator username
+    public static final String META_SESSION = "isInSession"; // values = T/F
 }

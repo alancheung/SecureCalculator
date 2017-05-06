@@ -1,5 +1,6 @@
 package edu.umd.cs.securecalculator;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -20,13 +21,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
 /**
  * A login screen that offers login via email/classID.
  */
 public class LoginActivity extends AppCompatActivity{
     private final String TAG = getClass().getSimpleName();
-    public static final String DB_USER_CHILD = "directoryID";
-    public static final String DB_CLASS_CHILD = "classID";
 
     // Id to identity READ_CONTACTS permission request.
     private static final int REQUEST_READ_CONTACTS = 0;
@@ -75,6 +76,19 @@ public class LoginActivity extends AppCompatActivity{
         database = fireDB.getReference();
     }
 
+    private boolean isDirectoryIDValid(String directoryID) {
+        String regexStr = "^[0-9]*$";
+        if(directoryID.trim().matches(regexStr)){
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private boolean isClassIDValid(String classID) {
+        return true;
+    }
+
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -115,20 +129,54 @@ public class LoginActivity extends AppCompatActivity{
             // form field with an error.
             focusView.requestFocus();
         } else {
-            database.child(DB_CLASS_CHILD).addListenerForSingleValueEvent(new ValueEventListener() {
+            database.child(FireDatabaseConstants.DB_CLASS_CHILD).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.hasChild(classID) &&
-                            dataSnapshot.child(classID).hasChild(directoryID)) {
-                        Log.d(TAG, directoryID + " exists in " + classID);
+                public void onDataChange(DataSnapshot dbData) {
+                    // Does this class exists yet?
+                    if (dbData.hasChild(classID)){
+                        // is the class in session
+                        Log.d(TAG, classID + " was found in Firebase");
+                        if((boolean) dbData.child(classID)
+                                .child(FireDatabaseConstants.DB_META_CHILD)
+                                .child(FireDatabaseConstants.META_SESSION).getValue()) {
+                            Intent studentOrInstructor;
+
+                            // class exists and is in session, so log in as user
+                            Log.d(TAG, classID + " is in session.");
+                            if (dbData.child(classID)
+                                    .hasChild(directoryID)){
+                                Log.d(TAG, directoryID + " exists in class " + classID + " as a student");
+                                studentOrInstructor = new Intent(getApplicationContext(), Calculator.class);
+                            } else if (dbData.child(classID)
+                                    .child(FireDatabaseConstants.DB_META_CHILD)
+                                    .child(FireDatabaseConstants.META_USER)
+                                    .hasChild(directoryID)){
+                                Log.d(TAG, directoryID + " exists in class " + classID + " as an instructor");
+                                // TODO go to instructor page.
+                                studentOrInstructor = new Intent(getApplicationContext(), Calculator.class);
+                            } else {
+                                Log.d(TAG, directoryID + " joined late.");
+                                addNewUser(classID, directoryID, "User joined late");
+                                studentOrInstructor = new Intent(getApplicationContext(), Calculator.class);
+                            }
+
+                            // Move to calculator, this is a student.
+                            studentOrInstructor.putExtra(Calculator.DIRECTORY_ID_EXTRA, directoryID);
+                            studentOrInstructor.putExtra(Calculator.CLASS_ID_EXTRA, classID);
+                            startActivity(studentOrInstructor);
+                        } else { // class is not in session
+                            Log.d(TAG, classID + " is not currently in session. Denying user");
+                            Toast.makeText(getApplicationContext(), classID + " is not in session.", Toast.LENGTH_LONG).show();
+                        }
                     } else {
-                        database.child(DB_CLASS_CHILD).child(classID).child(directoryID).setValue(true);
-                        Log.d(TAG, "Registered user " + mDirectoryID + " with classID " + classID);
-                        Toast.makeText(LoginActivity.this, "New user added to class " + classID, Toast.LENGTH_SHORT)
-                                .show();
+                        // class does not exists yet, so this is probably an instructor
+                        Log.d(TAG, "Creating new class " + classID);
+                        addNewClass(classID, directoryID);
+                        Intent instructor = new Intent(getApplicationContext(), Calculator.class);
+                        instructor.putExtra(Calculator.CLASS_ID_EXTRA, classID);
+                        instructor.putExtra(Calculator.DIRECTORY_ID_EXTRA, classID);
+                        startActivity(instructor);
                     }
-                    Intent toCalcActivity = new Intent(getApplicationContext(), Calculator.class);
-                    startActivity(toCalcActivity);
                 }
 
                 @Override
@@ -139,13 +187,36 @@ public class LoginActivity extends AppCompatActivity{
         }
     }
 
-    private boolean isDirectoryIDValid(String directoryID) {
-        return true;
+    private void addNewUser(String classID, String directoryID, String initLog){
+        // User Status
+        database.child(FireDatabaseConstants.DB_CLASS_CHILD)
+                .child(classID)
+                .child(FireDatabaseConstants.DB_USER_CHILD)
+                .child(directoryID)
+                .child(FireDatabaseConstants.USER_STATUS).setValue("OK");
+
+        // Initalize Log
+        ArrayList<String> log = new ArrayList<String>();
+        log.add(initLog);
+
+        // Create log
+        database.child(FireDatabaseConstants.DB_CLASS_CHILD)
+                .child(classID)
+                .child(FireDatabaseConstants.DB_USER_CHILD)
+                .child(directoryID)
+                .child(FireDatabaseConstants.USER_LOG).setValue(log);
     }
 
-    private boolean isClassIDValid(String classID) {
-        //TODO does this class exists yet?
-        return true;
+    private void addNewClass(String classID, String directoryID){
+        // Add in a class
+        database.child(FireDatabaseConstants.DB_CLASS_CHILD).child(classID).setValue(true);
+        // Add in metadata (user and isInSession
+        database.child(FireDatabaseConstants.DB_CLASS_CHILD).child(classID)
+                .child(FireDatabaseConstants.DB_META_CHILD)
+                .child(FireDatabaseConstants.META_USER).child(directoryID).setValue(true);
+        database.child(FireDatabaseConstants.DB_CLASS_CHILD).child(classID)
+                .child(FireDatabaseConstants.DB_META_CHILD)
+                .child(FireDatabaseConstants.META_SESSION).setValue(true);
     }
 }
 
