@@ -14,4 +14,8 @@ public class FireDatabaseConstants {
 
     public static final String META_USER = "authorized_user"; // creator username
     public static final String META_SESSION = "isInSession"; // values = T/F
+
+    public static final String OK_STATUS = "OK";
+    public static final String HELP_STATUS = "HELP";
+    public static final String LOG_OUT_STATUS = "LOGGED_OUT";
 }

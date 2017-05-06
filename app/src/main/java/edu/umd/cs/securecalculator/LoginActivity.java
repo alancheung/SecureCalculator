@@ -151,8 +151,7 @@ public class LoginActivity extends AppCompatActivity{
                                     .child(FireDatabaseConstants.META_USER)
                                     .hasChild(directoryID)){
                                 Log.d(TAG, directoryID + " exists in class " + classID + " as an instructor");
-                                // TODO go to instructor page.
-                                studentOrInstructor = new Intent(getApplicationContext(), Calculator.class);
+                                studentOrInstructor = new Intent(getApplicationContext(), LandingActivity.class);
                             } else {
                                 Log.d(TAG, directoryID + " joined late.");
                                 addNewUser(classID, directoryID, "User joined late");
@@ -170,8 +169,8 @@ public class LoginActivity extends AppCompatActivity{
                     } else {
                         // class does not exists yet, so this is probably an instructor
                         Log.d(TAG, "Creating new class " + classID);
-                        addNewClass(classID, directoryID);
-                        Intent instructor = new Intent(getApplicationContext(), Calculator.class);
+                        dbInteraction.addNewClass(classID, directoryID);
+                        Intent instructor = new Intent(getApplicationContext(), LandingActivity.class);
                         instructor.putExtra(Calculator.CLASS_ID_EXTRA, classID);
                         instructor.putExtra(Calculator.DIRECTORY_ID_EXTRA, classID);
                         startActivity(instructor);
@@ -188,34 +187,14 @@ public class LoginActivity extends AppCompatActivity{
 
     private void addNewUser(String classID, String directoryID, String initLog){
         // User Status
-        database.child(FireDatabaseConstants.DB_CLASS_CHILD)
-                .child(classID)
-                .child(FireDatabaseConstants.DB_USER_CHILD)
-                .child(directoryID)
-                .child(FireDatabaseConstants.USER_STATUS).setValue("OK");
+       dbInteraction.updateStatus(classID, directoryID, FireDatabaseConstants.OK_STATUS);
 
         // Initalize Log
         ArrayList<String> log = new ArrayList<String>();
         log.add(initLog);
 
         // Create log
-        database.child(FireDatabaseConstants.DB_CLASS_CHILD)
-                .child(classID)
-                .child(FireDatabaseConstants.DB_USER_CHILD)
-                .child(directoryID)
-                .child(FireDatabaseConstants.USER_LOG).setValue(log);
-    }
-
-    private void addNewClass(String classID, String directoryID){
-        // Add in a class
-        database.child(FireDatabaseConstants.DB_CLASS_CHILD).child(classID).setValue(true);
-        // Add in metadata (user and isInSession
-        database.child(FireDatabaseConstants.DB_CLASS_CHILD).child(classID)
-                .child(FireDatabaseConstants.DB_META_CHILD)
-                .child(FireDatabaseConstants.META_USER).child(directoryID).setValue(true);
-        database.child(FireDatabaseConstants.DB_CLASS_CHILD).child(classID)
-                .child(FireDatabaseConstants.DB_META_CHILD)
-                .child(FireDatabaseConstants.META_SESSION).setValue(true);
+        dbInteraction.updateLog(classID, directoryID, log);
     }
 }
 

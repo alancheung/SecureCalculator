@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -573,19 +572,11 @@ public class Calculator extends AppCompatActivity {
 		String dID = called.getStringExtra(DIRECTORY_ID_EXTRA);
 		switch (item.getItemId()) {
 			case R.id.menu_item_log_out:
-				database.child(FireDatabaseConstants.DB_CLASS_CHILD)
-						.child(cID)
-						.child(FireDatabaseConstants.DB_USER_CHILD)
-						.child(dID)
-						.child(FireDatabaseConstants.USER_STATUS).setValue("LOGGED_OUT");
+				dbInteraction.updateStatus(cID, dID, FireDatabaseConstants.LOG_OUT_STATUS);
 				finish();
 				return true;
 			case R.id.menu_item_request_help:
-				database.child(FireDatabaseConstants.DB_CLASS_CHILD)
-						.child(cID)
-						.child(FireDatabaseConstants.DB_USER_CHILD)
-						.child(dID)
-						.child(FireDatabaseConstants.USER_STATUS).setValue("HELP");
+				dbInteraction.updateStatus(cID, dID, FireDatabaseConstants.HELP_STATUS);
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
@@ -811,11 +802,7 @@ public class Calculator extends AppCompatActivity {
 
 	// Modifies the users status in the database - called in lifecycle methods
 	private void modifyUserStatus(String status) {
-		database.child(FireDatabaseConstants.DB_CLASS_CHILD)
-				.child(classID)
-				.child(directoryID)
-				.child(FireDatabaseConstants.USER_STATUS)
-				.setValue(status);
+		dbInteraction.updateStatus(classID, directoryID, status);
 	}
 
 }
