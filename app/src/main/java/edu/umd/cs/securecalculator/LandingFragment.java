@@ -1,5 +1,6 @@
 package edu.umd.cs.securecalculator;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -37,12 +38,12 @@ public class LandingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflator,ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflator, container, savedInstanceState);
         View view = inflator.inflate(R.layout.fragment_landing, container,false);
-        okL = (LinearLayout) view.findViewById(R.id.todo_column);
-        helpL = (LinearLayout) view.findViewById(R.id.inprogress_column);
-        outofAppL = (LinearLayout) view.findViewById(R.id.done_column);
+        okL = (LinearLayout) view.findViewById(R.id.ok_column);
+        helpL = (LinearLayout) view.findViewById(R.id.help_column);
+        outofAppL = (LinearLayout) view.findViewById(R.id.other_column);
 
         //get all information
-        //change "CMSC436-0101" ; get actual firebase
+        //change "CMSC436-0101"
         database.child("CMSC436-0101")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -54,13 +55,16 @@ public class LandingFragment extends Fragment {
 
                             final TextView currentUsername = new TextView(getActivity());
                             currentUsername.setText(student.getUsername());
-                            if(student.getStatus() == 0){
+                            if(student.getStatus() == 0){//status is ok
+                                currentUsername.setTextColor(Color.GREEN);
                                 okL.addView(currentUsername);
                             }
-                            else if(student.getStatus() == 1){
+                            else if(student.getStatus() == 1){//status is help
+                                currentUsername.setTextColor(Color.YELLOW);
                                 helpL.addView(currentUsername);
                             }
-                            if(student.getStatus() == 2){
+                            if(student.getStatus() == 2){//status is other
+                                currentUsername.setTextColor(Color.RED);
                                 outofAppL.addView(currentUsername);
                             }
                             currentUsername.setOnClickListener(new View.OnClickListener(){

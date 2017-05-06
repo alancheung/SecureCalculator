@@ -14,7 +14,7 @@ public class User {
     private Log log;
 
     private User() {
-
+        //do nothing
     }
 
     public User(int status, String username, Log log){

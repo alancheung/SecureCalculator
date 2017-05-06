@@ -14,7 +14,7 @@ tools:context="edu.umd.cs.securecalculator.LandingFragment">
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:id="@+id/todo_column"
+        android:id="@+id/ok_column"
         android:layout_weight="1"
         >
 
@@ -32,7 +32,7 @@ tools:context="edu.umd.cs.securecalculator.LandingFragment">
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:id="@+id/inprogress_column"
+        android:id="@+id/help_column"
         android:layout_weight="1"
         >
 
@@ -51,7 +51,7 @@ tools:context="edu.umd.cs.securecalculator.LandingFragment">
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:id="@+id/done_column"
+        android:id="@+id/other_column"
         android:layout_weight="1">
 
         <TextView
