@@ -120,7 +120,7 @@ public class LoginActivity extends Activity{
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     // TODO yeah this broke
                     if (dataSnapshot.hasChild(classID) &&
-                            dataSnapshot.child(classID).getValue().equals(directoryID)) {
+                            dataSnapshot.child(classID).hasChild(directoryID)) {
                         Log.d(TAG, directoryID + " exists in " + classID);
                     } else {
                         database.child(DB_CLASS_CHILD).child(classID).child(directoryID).setValue(true);
