@@ -13,6 +13,9 @@ import android.view.View.OnKeyListener;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Calculator extends Activity {
 
 	private final String SDK_VERSION = "1";
@@ -21,6 +24,9 @@ public class Calculator extends Activity {
 	private static final int SWIPE_MAX_OFF_PATH = 250;
 	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 	private GestureDetector gestureDetector;
+
+	private List<String> lifeCycleLog;
+	private List<String> btnPressLog;
 
 	/*
 	 * Edit Text and Button object initialization for simple calculator design.
@@ -78,6 +84,10 @@ public class Calculator extends Activity {
 		super.onCreate(savedInstanceState);
 		setTheme(android.R.style.Theme_Black);
 		setContentView(R.layout.calculator);
+
+		lifeCycleLog = new ArrayList<String>();
+		btnPressLog = new ArrayList<String>();
+		lifeCycleLog.add("Calculator view created. (onCreate)");
 
 		this.setTitle(" ");
 
@@ -684,5 +694,42 @@ public class Calculator extends Activity {
 		txtCalc.setText("0");
 		txtCalc.setSelection(1);
 		operator = 1;
+	}
+
+	// LOG LIFECYCLE METHODS
+	@Override
+	public void onStart() {
+		super.onStart();
+		lifeCycleLog.add("Calculator visible to users. (onStart)");
+	}
+
+	@Override
+	public void onRestart() {
+		super.onRestart();
+		lifeCycleLog.add("User returns to SecureCalculator. (onRestart)");
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		lifeCycleLog.add("User can interact with app. (onResume)");
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		lifeCycleLog.add("User is leaving SecureCalculator. (onPause)");
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		lifeCycleLog.add("User has left SecureCalculator. (onStop)");
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		lifeCycleLog.add("User has quit the app. (onDestroy)");
 	}
 }

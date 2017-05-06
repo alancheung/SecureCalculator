@@ -20,13 +20,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-
 /**
  * A login screen that offers login via email/classID.
  */
 public class LoginActivity extends Activity{
     private final String TAG = getClass().getSimpleName();
+    public static final String DB_USER_CHILD = "directoryID";
+    public static final String DB_CLASS_CHILD = "classID";
 
     // Id to identity READ_CONTACTS permission request.
     private static final int REQUEST_READ_CONTACTS = 0;
@@ -115,22 +115,19 @@ public class LoginActivity extends Activity{
             // form field with an error.
             focusView.requestFocus();
         } else {
-            database.child(FireDatabaseConstants.DB_CLASS_CHILD).addListenerForSingleValueEvent(new ValueEventListener() {
+            database.child(DB_CLASS_CHILD).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.hasChild(classID) &&
                             dataSnapshot.child(classID).hasChild(directoryID)) {
                         Log.d(TAG, directoryID + " exists in " + classID);
                     } else {
-                        // Add new user
-                        addNewUser(classID, directoryID);
+                        database.child(DB_CLASS_CHILD).child(classID).child(directoryID).setValue(true);
                         Log.d(TAG, "Registered user " + mDirectoryID + " with classID " + classID);
                         Toast.makeText(LoginActivity.this, "New user added to class " + classID, Toast.LENGTH_SHORT)
                                 .show();
                     }
                     Intent toCalcActivity = new Intent(getApplicationContext(), Calculator.class);
-                    toCalcActivity.putExtra(Calculator.DIRECTORY_ID_EXTRA, directoryID);
-                    toCalcActivity.putExtra(Calculator.CLASS_ID_EXTRA, classID);
                     startActivity(toCalcActivity);
                 }
 
@@ -140,20 +137,6 @@ public class LoginActivity extends Activity{
                 }
             });
         }
-    }
-
-    private void addNewUser(String classID, String directoryID){
-        // User Status
-        database.child(FireDatabaseConstants.DB_CLASS_CHILD).child(classID).child(directoryID)
-                .child(FireDatabaseConstants.USER_STATUS).setValue("OK");
-
-        // Initalize Log
-        ArrayList<String> log = new ArrayList<String>();
-        log.add("User logged in.");
-
-        // Create log
-        database.child(FireDatabaseConstants.DB_CLASS_CHILD).child(classID).child(directoryID)
-                .child(FireDatabaseConstants.USER_LOG).setValue(log);
     }
 
     private boolean isDirectoryIDValid(String directoryID) {
