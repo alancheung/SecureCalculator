@@ -69,6 +69,9 @@ public class Calculator extends Activity {
 	private boolean readyToClear = false;
 	private boolean hasChanged = false;
 
+	public static final String DIRECTORY_ID_EXTRA = "directoryID";
+	public static final String CLASS_ID_EXTRA = "classID";
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
