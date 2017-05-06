@@ -13,7 +13,9 @@ import android.view.View.OnKeyListener;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class Calculator extends Activity {
@@ -26,7 +28,9 @@ public class Calculator extends Activity {
 	private GestureDetector gestureDetector;
 
 	private List<String> lifeCycleLog;
-	private List<String> btnPressLog;
+	private boolean userLeftApp = false;
+	private String leftTime = "";
+	private String returnTime = "";
 
 	/*
 	 * Edit Text and Button object initialization for simple calculator design.
@@ -86,7 +90,6 @@ public class Calculator extends Activity {
 		setContentView(R.layout.calculator);
 
 		lifeCycleLog = new ArrayList<String>();
-		btnPressLog = new ArrayList<String>();
 		lifeCycleLog.add("Calculator view created. (onCreate)");
 
 		this.setTitle(" ");
@@ -712,7 +715,16 @@ public class Calculator extends Activity {
 	@Override
 	public void onResume() {
 		super.onResume();
-		lifeCycleLog.add("User can interact with app. (onResume)");
+
+		if (userLeftApp) {
+			userLeftApp = false;
+
+			returnTime = getCurrentTime();
+			lifeCycleLog.add("User has returned to the app at " + returnTime + ". (onResume)");
+		}
+		else {
+			lifeCycleLog.add("User can interact with app. (onResume)");
+		}
 	}
 
 	@Override
@@ -724,12 +736,24 @@ public class Calculator extends Activity {
 	@Override
 	public void onStop() {
 		super.onStop();
-		lifeCycleLog.add("User has left SecureCalculator. (onStop)");
+
+		userLeftApp = true;
+
+		leftTime = getCurrentTime();
+
+		lifeCycleLog.add("User has left SecureCalculator at " + leftTime + ". (onStop)");
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		lifeCycleLog.add("User has quit the app. (onDestroy)");
+	}
+
+	private String getCurrentTime() {
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+		System.out.println(sdf.format(cal.getTime()).toString());
+		return(sdf.format(cal.getTime()));
 	}
 }
