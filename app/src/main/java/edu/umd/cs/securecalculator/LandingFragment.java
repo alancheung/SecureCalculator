@@ -38,12 +38,12 @@ public class LandingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflator,ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflator, container, savedInstanceState);
         View view = inflator.inflate(R.layout.fragment_landing, container,false);
-        okL = (LinearLayout) view.findViewById(R.id.todo_column);
-        helpL = (LinearLayout) view.findViewById(R.id.inprogress_column);
-        outofAppL = (LinearLayout) view.findViewById(R.id.done_column);
+        okL = (LinearLayout) view.findViewById(R.id.ok_column);
+        helpL = (LinearLayout) view.findViewById(R.id.help_column);
+        outofAppL = (LinearLayout) view.findViewById(R.id.other_column);
 
         //get all information
-        //change "CMSC436-0101" ; get actual firebase
+        //change "CMSC436-0101"
         database.child("CMSC436-0101")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
