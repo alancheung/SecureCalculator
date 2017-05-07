@@ -20,5 +20,16 @@
     <string name="ok_label">OK</string>
     <string name="help_label">HELP</string>
     <string name="other_label">OTHER</string>
+    <string name="title_activity_bs">Asynch</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
 
 </resources>

@@ -53,9 +53,17 @@ public class LandingFragment extends Fragment {
         database.child(FireDatabaseConstants.DB_CLASS_CHILD)
                 .child(classID)
                 .child(FireDatabaseConstants.DB_USER_CHILD)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
+                .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.d(TAG, "Clearing out all views.");
+                        if(okL.getChildCount() > 1)
+                            okL.removeViews(1, okL.getChildCount()-1);
+                        if(helpL.getChildCount() > 1)
+                            helpL.removeViews(1, helpL.getChildCount()-1);
+                        if(outofAppL.getChildCount() > 1)
+                            outofAppL.removeViews(1, outofAppL.getChildCount()-1);
+
                         Log.d(TAG, "Num of students: " + dataSnapshot.getChildrenCount());
                         for (DataSnapshot post : dataSnapshot.getChildren()) {
                             final User s = post.getValue(User.class);
@@ -64,6 +72,7 @@ public class LandingFragment extends Fragment {
 
                             TextView currentUsername = new TextView(getActivity());
                             currentUsername.setText(s.getDirectoryID() + ":" + s.getStatus());
+
                             if(s.getStatus().equals("OK")){//status is ok
                                 currentUsername.setTextColor(Color.GREEN);
                                 okL.addView(currentUsername);
@@ -96,5 +105,4 @@ public class LandingFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
 }
