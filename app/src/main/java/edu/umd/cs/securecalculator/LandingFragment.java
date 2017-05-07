@@ -63,7 +63,7 @@ public class LandingFragment extends Fragment {
                                         + " and " + s.getLog().size() + " entries in log");
 
                             TextView currentUsername = new TextView(getActivity());
-                            currentUsername.setText(s.getDirectoryID());
+                            currentUsername.setText(s.getDirectoryID() + ":" + s.getStatus());
                             if(s.getStatus().equals("OK")){//status is ok
                                 currentUsername.setTextColor(Color.GREEN);
                                 okL.addView(currentUsername);
@@ -89,26 +89,6 @@ public class LandingFragment extends Fragment {
                 });
         return view;
     }
-
-    /*
-    private void initUI(Map<String, Object> students) {
-        HashMap<String, String> sStatus = new HashMap<>();
-
-        for (Map.Entry<String, Object> entry : students.entrySet()) {
-            Map s = (Map) entry.getValue();
-
-            String directoryID, status;
-            directoryID = (String) s.get("directoryID");
-            status = (String) s.get("status");
-            sStatus.put(directoryID, status);
-
-            Log.d("LANDING", "Processed " + directoryID + " with status " + status);
-        }
-
-        for (String directoryID : sStatus.keySet()) {
-
-        }
-    }*/
     public static LandingFragment newInstance() {
         Bundle args = new Bundle();
 
