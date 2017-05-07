@@ -1,6 +1,6 @@
 package edu.umd.cs.securecalculator;
 
-import android.util.Log;
+import java.util.ArrayList;
 
 /**
  * Created by nickyhosamane on 5/6/17.
@@ -9,31 +9,42 @@ import android.util.Log;
 
 public class User {
 
-    private int status;
-    private String username;
-    private Log log;
+    private String status;
+    private String directoryID;
+    private ArrayList<String> log;
 
     private User() {
         //do nothing
     }
 
-    public User(int status, String username, Log log){
+    public User(String directoryID, String status, ArrayList<String> log){
+        this.directoryID = directoryID;
         this.status = status;
-        this.username = username;
         this.log = log;
-
     }
 
-    public int getStatus(){
+    public String getStatus(){
         return this.status;
 
     }
 
-    public String getUsername(){
-        return this.username;
+    public String getDirectoryID(){
+        return this.directoryID;
     }
 
-    public Log getLog(){
+    public ArrayList<String> getLog(){
         return this.log;
+    }
+
+    public void setDirectoryID(String directoryID){
+        this.directoryID = directoryID;
+    }
+
+    public void setStatus(String status){
+        this.status = status;
+    }
+
+    public void setLog(ArrayList<String> log){
+        this.log = log;
     }
 }

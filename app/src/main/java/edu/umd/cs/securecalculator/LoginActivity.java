@@ -128,6 +128,7 @@ public class LoginActivity extends AppCompatActivity{
             // form field with an error.
             focusView.requestFocus();
         } else {
+            // Basic login attempt.
             database.child(FireDatabaseConstants.DB_CLASS_CHILD).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dbData) {
@@ -142,34 +143,71 @@ public class LoginActivity extends AppCompatActivity{
 
                             // class exists and is in session, so log in as user
                             Log.d(TAG, classID + " is in session.");
+
+                            // Check to see if the user logging in is an instructor or student for this class
                             if (dbData.child(classID)
-                                    .hasChild(directoryID)){
-                                Log.d(TAG, directoryID + " exists in class " + classID + " as a student");
-                                studentOrInstructor = new Intent(getApplicationContext(), Calculator.class);
-                            } else if (dbData.child(classID)
                                     .child(FireDatabaseConstants.DB_META_CHILD)
                                     .child(FireDatabaseConstants.META_USER)
                                     .hasChild(directoryID)){
                                 Log.d(TAG, directoryID + " exists in class " + classID + " as an instructor");
                                 studentOrInstructor = new Intent(getApplicationContext(), LandingActivity.class);
+                                // Move to next step. Resulting Activity is initialized by if/else statements
+                                studentOrInstructor.putExtra(Calculator.DIRECTORY_ID_EXTRA, directoryID);
+                                studentOrInstructor.putExtra(Calculator.CLASS_ID_EXTRA, classID);
+                                startActivity(studentOrInstructor);
                             } else {
-                                Log.d(TAG, directoryID + " joined late.");
-                                addNewUser(classID, directoryID, "User joined late");
-                                studentOrInstructor = new Intent(getApplicationContext(), Calculator.class);
+                                if (dbData.child(classID)
+                                        .child(FireDatabaseConstants.DB_USER_CHILD)
+                                        .hasChild(directoryID)){
+                                    Log.d(TAG, directoryID + " exists in class " + classID + " as a student");
+                                    if (dbData.child(classID)
+                                            .child(FireDatabaseConstants.DB_USER_CHILD)
+                                            .child(directoryID)
+                                            .getValue(User.class).getStatus() == "LOGGED_OUT") {
+                                        Toast.makeText(getApplicationContext(), "You have logged out of this class. Please see an instructor", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Log.d(TAG, directoryID + " is logging into " + classID);
+                                        studentOrInstructor = new Intent(getApplicationContext(), Calculator.class);
+                                        // Move to next step. Resulting Activity is initialized by if/else statements
+                                        studentOrInstructor.putExtra(Calculator.DIRECTORY_ID_EXTRA, directoryID);
+                                        studentOrInstructor.putExtra(Calculator.CLASS_ID_EXTRA, classID);
+                                        startActivity(studentOrInstructor);
+                                    }
+                                } else {
+                                    Log.d(TAG, directoryID + " joined class " + classID);
+                                    addNewUser(classID, directoryID, "User joined");
+                                    studentOrInstructor = new Intent(getApplicationContext(), Calculator.class);
+                                    // Move to next step. Resulting Activity is initialized by if/else statements
+                                    studentOrInstructor.putExtra(Calculator.DIRECTORY_ID_EXTRA, directoryID);
+                                    studentOrInstructor.putExtra(Calculator.CLASS_ID_EXTRA, classID);
+                                    startActivity(studentOrInstructor);
+                                }
                             }
-
-                            // Move to calculator, this is a student.
-                            studentOrInstructor.putExtra(Calculator.DIRECTORY_ID_EXTRA, directoryID);
-                            studentOrInstructor.putExtra(Calculator.CLASS_ID_EXTRA, classID);
-                            startActivity(studentOrInstructor);
                         } else { // class is not in session
-                            Log.d(TAG, classID + " is not currently in session. Denying user");
-                            Toast.makeText(getApplicationContext(), classID + " is not in session.", Toast.LENGTH_LONG).show();
+                            Log.d(TAG, classID + " is not currently in session");
+                            if ((boolean) dbData.child(classID)
+                                    .child(FireDatabaseConstants.DB_META_CHILD)
+                                    .child(FireDatabaseConstants.META_USER).hasChild(directoryID)) {
+
+                                Log.d(TAG, directoryID + " is an instructor. Starting class");
+
+                                dbInteraction.setClassInSession(classID);
+                                Intent instructor = new Intent(getApplicationContext(), LandingActivity.class);
+                                instructor.putExtra(Calculator.CLASS_ID_EXTRA, classID);
+                                instructor.putExtra(Calculator.DIRECTORY_ID_EXTRA, classID);
+                                startActivity(instructor);
+                            } else {
+                                // Is not an authorized user.
+                                Log.d(TAG, directoryID + " is not an authorized user. Denying access");
+                                Toast.makeText(getApplicationContext(), classID + " is not in session.", Toast.LENGTH_LONG).show();
+                            }
                         }
                     } else {
-                        // class does not exists yet, so this is probably an instructor
+                        // class does not exists yet, so create and add user as an instructor
                         Log.d(TAG, "Creating new class " + classID);
                         dbInteraction.addNewClass(classID, directoryID);
+
+                        // Navigate to landing page
                         Intent instructor = new Intent(getApplicationContext(), LandingActivity.class);
                         instructor.putExtra(Calculator.CLASS_ID_EXTRA, classID);
                         instructor.putExtra(Calculator.DIRECTORY_ID_EXTRA, classID);
@@ -186,15 +224,12 @@ public class LoginActivity extends AppCompatActivity{
     }
 
     private void addNewUser(String classID, String directoryID, String initLog){
-        // User Status
-       dbInteraction.updateStatus(classID, directoryID, FireDatabaseConstants.OK_STATUS);
-
         // Initalize Log
         ArrayList<String> log = new ArrayList<String>();
         log.add(initLog);
 
-        // Create log
-        dbInteraction.updateLog(classID, directoryID, log);
+        User user = new User(directoryID, "OK", log);
+        dbInteraction.addNewStudent(classID, user);
     }
 }
 

@@ -54,16 +54,15 @@ public class LandingFragment extends Fragment {
                             //student = new User(snapshot);
 
                             final TextView currentUsername = new TextView(getActivity());
-                            currentUsername.setText(student.getUsername());
-                            if(student.getStatus() == 0){//status is ok
+                            currentUsername.setText(student.getDirectoryID());
+                            if(student.getStatus().equals("OK")){//status is ok
                                 currentUsername.setTextColor(Color.GREEN);
                                 okL.addView(currentUsername);
                             }
-                            else if(student.getStatus() == 1){//status is help
+                            else if(student.getStatus().equals("HELP")){//status is help
                                 currentUsername.setTextColor(Color.YELLOW);
                                 helpL.addView(currentUsername);
-                            }
-                            if(student.getStatus() == 2){//status is other
+                            } else {//status is other
                                 currentUsername.setTextColor(Color.RED);
                                 outofAppL.addView(currentUsername);
                             }
@@ -83,7 +82,6 @@ public class LandingFragment extends Fragment {
     }
 
     public static LandingFragment newInstance() {
-
         Bundle args = new Bundle();
 
         LandingFragment fragment = new LandingFragment();

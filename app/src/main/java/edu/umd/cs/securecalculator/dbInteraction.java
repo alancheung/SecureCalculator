@@ -42,9 +42,31 @@ public class dbInteraction {
         database.child(FireDatabaseConstants.DB_CLASS_CHILD).child(classID)
                 .child(FireDatabaseConstants.DB_META_CHILD)
                 .child(FireDatabaseConstants.META_USER).child(directoryID).setValue(true);
-        database.child(FireDatabaseConstants.DB_CLASS_CHILD).child(classID)
+        setClassInSession(classID);
+    }
+
+    static void addNewStudent(String classID, User user){
+        database.child(FireDatabaseConstants.DB_CLASS_CHILD)
+                .child(classID)
+                .child(FireDatabaseConstants.DB_USER_CHILD)
+                .child(user.getDirectoryID())
+                .setValue(user);
+    }
+
+    static void setClassInSession(String classID){
+        database.child(FireDatabaseConstants.DB_CLASS_CHILD)
+                .child(classID)
                 .child(FireDatabaseConstants.DB_META_CHILD)
                 .child(FireDatabaseConstants.META_SESSION).setValue(true);
+    }
+
+    static void getAllStudents(String classID, String directoryID){
+
+    }
+
+    static boolean isAuthUser(String classID, String directoryID){
+        database.child(FireDatabaseConstants.DB_CLASS_CHILD);
+        return false;
     }
 
 
