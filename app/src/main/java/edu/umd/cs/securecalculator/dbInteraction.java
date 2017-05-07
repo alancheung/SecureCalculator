@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class dbInteraction {
     private static FirebaseDatabase fireDB = FirebaseDatabase.getInstance();
     private static DatabaseReference database = fireDB.getReference();
+    private static final String TAG = "dbInteraction";
 
     /**
      * THis function interacts with this app's Firebase database to update a student's status
@@ -58,10 +59,6 @@ public class dbInteraction {
                 .child(classID)
                 .child(FireDatabaseConstants.DB_META_CHILD)
                 .child(FireDatabaseConstants.META_SESSION).setValue(true);
-    }
-
-    static void getAllStudents(String classID, String directoryID){
-
     }
 
     static boolean isAuthUser(String classID, String directoryID){

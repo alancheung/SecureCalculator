@@ -84,8 +84,25 @@ public class LoginActivity extends AppCompatActivity{
         }
     }
 
+    /**
+     * Class ID must match the following schema: \n
+     *      four characters for major (Ex. CMSC) \n
+     *      three numbers for class (Ex. 436)\n
+     *      a dash (Ex. -)\n
+     *      four numbers for section (Ex. 0101)\n
+     *
+     *      Valid: CMSC436-0101
+     *      Not Valid: Other shit.
+     * @param classID - classID to test
+     * @return valid or not valid
+     */
     private boolean isClassIDValid(String classID) {
-        return true;
+        String regexStr = "^[A-Z]{4}[0-9]{3}-[0-9]{4}";
+
+        if(classID.trim().matches(regexStr))
+            return true;
+        else
+            return false;
     }
 
     /**
@@ -194,7 +211,7 @@ public class LoginActivity extends AppCompatActivity{
                                 dbInteraction.setClassInSession(classID);
                                 Intent instructor = new Intent(getApplicationContext(), LandingActivity.class);
                                 instructor.putExtra(Calculator.CLASS_ID_EXTRA, classID);
-                                instructor.putExtra(Calculator.DIRECTORY_ID_EXTRA, classID);
+                                instructor.putExtra(Calculator.DIRECTORY_ID_EXTRA, directoryID);
                                 startActivity(instructor);
                             } else {
                                 // Is not an authorized user.
@@ -210,7 +227,7 @@ public class LoginActivity extends AppCompatActivity{
                         // Navigate to landing page
                         Intent instructor = new Intent(getApplicationContext(), LandingActivity.class);
                         instructor.putExtra(Calculator.CLASS_ID_EXTRA, classID);
-                        instructor.putExtra(Calculator.DIRECTORY_ID_EXTRA, classID);
+                        instructor.putExtra(Calculator.DIRECTORY_ID_EXTRA, directoryID);
                         startActivity(instructor);
                     }
                 }

@@ -3,6 +3,7 @@ package edu.umd.cs.securecalculator;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +18,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 
-
 public class LandingFragment extends Fragment {
+    private final String TAG = getClass().getSimpleName();
     LinearLayout okL, helpL, outofAppL;
+    String classID, directoryID;
+
     private LoginActivity loginActivity;
     // Firebase Database
     private FirebaseDatabase fireDB;
@@ -42,24 +45,29 @@ public class LandingFragment extends Fragment {
         helpL = (LinearLayout) view.findViewById(R.id.help_column);
         outofAppL = (LinearLayout) view.findViewById(R.id.other_column);
 
+        Bundle args = getArguments();
+        classID = args.getString(Calculator.CLASS_ID_EXTRA);
+        directoryID = args.getString(Calculator.DIRECTORY_ID_EXTRA);
+
         //get all information
-        //change "CMSC436-0101"
-        database.child("CMSC436-0101")
+        database.child(FireDatabaseConstants.DB_CLASS_CHILD)
+                .child(classID)
+                .child(FireDatabaseConstants.DB_USER_CHILD)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            //User student = new User(dataSnapshot);
-                            final User student = snapshot.getValue(User.class);
-                            //student = new User(snapshot);
+                        Log.d(TAG, "Num of students: " + dataSnapshot.getChildrenCount());
+                        for (DataSnapshot post : dataSnapshot.getChildren()) {
+                            final User s = post.getValue(User.class);
+                            Log.d(TAG, "Processing " + s.getDirectoryID() + " with status " + s.getStatus()
+                                        + " and " + s.getLog().size() + " entries in log");
 
-                            final TextView currentUsername = new TextView(getActivity());
-                            currentUsername.setText(student.getDirectoryID());
-                            if(student.getStatus().equals("OK")){//status is ok
+                            TextView currentUsername = new TextView(getActivity());
+                            currentUsername.setText(s.getDirectoryID());
+                            if(s.getStatus().equals("OK")){//status is ok
                                 currentUsername.setTextColor(Color.GREEN);
                                 okL.addView(currentUsername);
-                            }
-                            else if(student.getStatus().equals("HELP")){//status is help
+                            } else if(s.getStatus().equals("HELP")){//status is help
                                 currentUsername.setTextColor(Color.YELLOW);
                                 helpL.addView(currentUsername);
                             } else {//status is other
@@ -69,18 +77,38 @@ public class LandingFragment extends Fragment {
                             currentUsername.setOnClickListener(new View.OnClickListener(){
                                 @Override
                                 public void onClick(View view){//this is an anonymous inner class
-                                    Toast.makeText(getActivity(), student.getLog().toString() ,Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getActivity(), s.getLog().toString(), Toast.LENGTH_LONG).show();
                                 }
                             });
                         }
                     }
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
+                        // Well fuck.
                     }
                 });
         return view;
     }
 
+    /*
+    private void initUI(Map<String, Object> students) {
+        HashMap<String, String> sStatus = new HashMap<>();
+
+        for (Map.Entry<String, Object> entry : students.entrySet()) {
+            Map s = (Map) entry.getValue();
+
+            String directoryID, status;
+            directoryID = (String) s.get("directoryID");
+            status = (String) s.get("status");
+            sStatus.put(directoryID, status);
+
+            Log.d("LANDING", "Processed " + directoryID + " with status " + status);
+        }
+
+        for (String directoryID : sStatus.keySet()) {
+
+        }
+    }*/
     public static LandingFragment newInstance() {
         Bundle args = new Bundle();
 
