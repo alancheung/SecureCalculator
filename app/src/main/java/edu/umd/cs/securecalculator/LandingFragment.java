@@ -71,7 +71,7 @@ public class LandingFragment extends Fragment {
                                         + " and " + s.getLog().size() + " entries in log");
 
                             TextView currentUsername = new TextView(getActivity());
-                            currentUsername.setText(s.getDirectoryID() + ":" + s.getStatus());
+                            currentUsername.setText(s.getDirectoryID());
 
                             if(s.getStatus().equals("OK")){//status is ok
                                 currentUsername.setTextColor(Color.GREEN);
@@ -86,7 +86,7 @@ public class LandingFragment extends Fragment {
                             currentUsername.setOnClickListener(new View.OnClickListener(){
                                 @Override
                                 public void onClick(View view){//this is an anonymous inner class
-                                    Toast.makeText(getActivity(), s.getLog().toString(), Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getActivity(), s.getStatus().toString(), Toast.LENGTH_LONG).show();
                                 }
                             });
                         }
