@@ -17,12 +17,7 @@
             android:name=".Calculator"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
-            android:label="@string/app_name"></activity>ls
-
-        <activity
-            android:name=".LoginActivity">
-            android:label="@string/app_name"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+            android:label="@string/app_name"></activity>
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
