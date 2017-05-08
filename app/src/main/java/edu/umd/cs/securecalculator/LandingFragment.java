@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -78,6 +79,11 @@ public class LandingFragment extends Fragment {
 
                             TextView currentUsername = new TextView(getActivity());
                             currentUsername.setText(s.getDirectoryID());
+
+                            LinearLayout.LayoutParams currentUsernameParams = new LinearLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            currentUsernameParams.gravity = Gravity.CENTER;
+                            currentUsername.setLayoutParams(currentUsernameParams);
 
                             if(s.getStatus().equals("OK")){//status is ok
                                 currentUsername.setTextColor(Color.GREEN);
