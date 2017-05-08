@@ -42,6 +42,9 @@ public class Calculator extends AppCompatActivity {
 	private String directoryID = "";
 	private String classID = "";
 
+    private boolean validFinish;
+
+
 	/*
 	 * Edit Text and Button object initialization for simple calculator design.
 	 */
@@ -118,7 +121,7 @@ public class Calculator extends AppCompatActivity {
 		lifeCycleLog = new ArrayList<String>();
 		lifeCycleLog.add("onCreate: Calculator view created.");
 
-
+        validFinish = false;
 
 		this.setTitle(" ");
 
@@ -572,7 +575,8 @@ public class Calculator extends AppCompatActivity {
 		String dID = called.getStringExtra(DIRECTORY_ID_EXTRA);
 		switch (item.getItemId()) {
 			case R.id.menu_item_log_out:
-				dbInteraction.updateStatus(cID, dID, FireDatabaseConstants.LOG_OUT_STATUS);
+                dbInteraction.updateStatus(cID, dID, FireDatabaseConstants.DONE_STATUS);
+                validFinish = true;
 				finish();
 				return true;
 			case R.id.menu_item_request_help:
@@ -786,10 +790,16 @@ public class Calculator extends AppCompatActivity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+        String status;
+        if(validFinish){
+            status = FireDatabaseConstants.DONE_STATUS;
+            lifeCycleLog.add("onDestroy: User has quit the app through valid logout.");
+        } else{
+            status = FireDatabaseConstants.LOG_OUT_STATUS;
+            lifeCycleLog.add("onDestroy: User has left the app through some other means.");
+        }
 
-		modifyUserStatus("LOGGED_OUT");
-
-		lifeCycleLog.add("onDestroy: User has quit the app.");
+		modifyUserStatus(status);
 	}
 
 	// Gets the current time and returns it in the format: hour:minute:second.millisecond

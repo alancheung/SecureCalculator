@@ -180,7 +180,8 @@ public class LoginActivity extends AppCompatActivity{
                                     if (dbData.child(classID)
                                             .child(FireDatabaseConstants.DB_USER_CHILD)
                                             .child(directoryID)
-                                            .getValue(User.class).getStatus() == "LOGGED_OUT") {
+                                            .getValue(User.class)
+                                            .getStatus().equals("LOGGED_OUT")) {
                                         Toast.makeText(getApplicationContext(), "You have logged out of this class. Please see an instructor", Toast.LENGTH_LONG).show();
                                     } else {
                                         Log.d(TAG, directoryID + " is logging into " + classID);
