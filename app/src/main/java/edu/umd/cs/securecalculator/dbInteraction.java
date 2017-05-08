@@ -61,6 +61,13 @@ public class dbInteraction {
                 .child(FireDatabaseConstants.META_SESSION).setValue(true);
     }
 
+    static void setClassNotInSession(String classID){
+        database.child(FireDatabaseConstants.DB_CLASS_CHILD)
+                .child(classID)
+                .child(FireDatabaseConstants.DB_META_CHILD)
+                .child(FireDatabaseConstants.META_SESSION).setValue(false);
+    }
+
     static boolean isAuthUser(String classID, String directoryID){
         database.child(FireDatabaseConstants.DB_CLASS_CHILD);
         return false;

@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -20,7 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class LandingFragment extends Fragment {
     private final String TAG = getClass().getSimpleName();
-    LinearLayout okL, helpL, outofAppL;
+    LinearLayout okL, helpL, outofAppL, logoutL;
     String classID, directoryID;
 
     private LoginActivity loginActivity;
@@ -31,6 +34,7 @@ public class LandingFragment extends Fragment {
     @Override
     public void onCreate(Bundle save){
         super.onCreate(save);
+        setHasOptionsMenu(true);
 
         // Init Firebase DB
         fireDB = FirebaseDatabase.getInstance();
@@ -40,10 +44,12 @@ public class LandingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflator,ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflator, container, savedInstanceState);
+        setHasOptionsMenu(true);
         View view = inflator.inflate(R.layout.fragment_landing, container,false);
         okL = (LinearLayout) view.findViewById(R.id.ok_column);
         helpL = (LinearLayout) view.findViewById(R.id.help_column);
         outofAppL = (LinearLayout) view.findViewById(R.id.other_column);
+        logoutL = (LinearLayout) view.findViewById(R.id.logged_out_column);
 
         Bundle args = getArguments();
         classID = args.getString(Calculator.CLASS_ID_EXTRA);
@@ -79,6 +85,9 @@ public class LandingFragment extends Fragment {
                             } else if(s.getStatus().equals("HELP")){//status is help
                                 currentUsername.setTextColor(Color.YELLOW);
                                 helpL.addView(currentUsername);
+                            } else if(s.getStatus().equals("LOGGED_OUT")) {//status is logged out
+                                currentUsername.setTextColor(Color.GRAY);
+                                logoutL.addView(currentUsername);
                             } else {//status is other
                                 currentUsername.setTextColor(Color.RED);
                                 outofAppL.addView(currentUsername);
@@ -98,6 +107,47 @@ public class LandingFragment extends Fragment {
                 });
         return view;
     }
+
+    @Override
+    public void onCreateOptionsMenu (Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu,inflater);
+        Log.d(TAG,"OnCreateOptionsMenu");
+        inflater.inflate(R.menu.fragment_landing, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected (MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_end_class:
+                database.child(FireDatabaseConstants.DB_CLASS_CHILD)
+                        .child(classID)
+                        .child(FireDatabaseConstants.DB_USER_CHILD)
+                        .addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Log.d(TAG, "Num of students: " + dataSnapshot.getChildrenCount());
+                                //setting all students' statuses to LOGGED_OUT
+                                for (DataSnapshot post : dataSnapshot.getChildren()) {
+                                    final User s = post.getValue(User.class);
+                                    Log.d(TAG, "Processing " + s.getDirectoryID() + " with status " + s.getStatus()
+                                            + " and " + s.getLog().size() + " entries in log");
+
+                                    dbInteraction.updateStatus(classID,directoryID,FireDatabaseConstants.LOG_OUT_STATUS);
+                                }
+                            }
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                // Well fuck.
+                            }
+                        });
+                dbInteraction.setClassNotInSession(classID);
+                //TODO download and parse all logs
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     public static LandingFragment newInstance() {
         Bundle args = new Bundle();
 

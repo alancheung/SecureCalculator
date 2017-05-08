@@ -20,7 +20,10 @@
     <string name="ok_label">OK</string>
     <string name="help_label">HELP</string>
     <string name="other_label">OTHER</string>
+    <string name="logged_out_label">LOGGED OUT</string>
     <string name="title_activity_bs">Asynch</string>
+
+    <string name="end_class">End Class</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
