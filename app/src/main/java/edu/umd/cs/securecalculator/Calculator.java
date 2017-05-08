@@ -2,6 +2,8 @@ package edu.umd.cs.securecalculator;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
@@ -742,12 +744,34 @@ public class Calculator extends AppCompatActivity {
 	public void onStart() {
 		super.onStart();
 		lifeCycleLog.add("onStart: Calculator visible to user.");
+
+		ConnectivityManager cm =
+				(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+		boolean isConnected = activeNetwork != null &&
+				activeNetwork.isConnectedOrConnecting();
+		if(!isConnected){
+			lifeCycleLog.add("Internet not connected");
+		}
+
+
 	}
 
 	@Override
 	public void onRestart() {
 		super.onRestart();
 		lifeCycleLog.add("onRestart: User returns to SecureCalculator.");
+
+		ConnectivityManager cm =
+				(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+		boolean isConnected = activeNetwork != null &&
+				activeNetwork.isConnectedOrConnecting();
+		if(!isConnected){
+			lifeCycleLog.add("Internet not connected");
+		}
 	}
 
 	@Override
@@ -762,6 +786,16 @@ public class Calculator extends AppCompatActivity {
 		}
 		else {
 			lifeCycleLog.add("onResume: User can interact with app.");
+		}
+
+		ConnectivityManager cm =
+				(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+		boolean isConnected = activeNetwork != null &&
+				activeNetwork.isConnectedOrConnecting();
+		if(!isConnected){
+			lifeCycleLog.add("Internet not connected");
 		}
 	}
 
@@ -781,6 +815,16 @@ public class Calculator extends AppCompatActivity {
 		modifyUserStatus("onStop");
 
 		lifeCycleLog.add("onStop: User has left SecureCalculator at " + leftTime + ".");
+
+		ConnectivityManager cm =
+				(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+		boolean isConnected = activeNetwork != null &&
+				activeNetwork.isConnectedOrConnecting();
+		if(!isConnected){
+			lifeCycleLog.add("Internet not connected");
+		}
 	}
 
 	@Override
@@ -801,7 +845,7 @@ public class Calculator extends AppCompatActivity {
 	}
 
 	// Modifies the users status in the database - called in lifecycle methods
-	private void modifyUserStatus(String status) {
+	public void modifyUserStatus(String status) {
 		dbInteraction.updateStatus(classID, directoryID, status);
 	}
 

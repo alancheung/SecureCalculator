@@ -1,8 +1,10 @@
 package edu.umd.cs.securecalculator;
 
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -24,7 +26,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class LandingFragment extends Fragment {
     private final String TAG = getClass().getSimpleName();
-    LinearLayout okL, helpL, outofAppL, logoutL;
+    LinearLayout okL, helpL, outofAppL, logoutLt;
     String classID, directoryID;
 
     private LoginActivity loginActivity;
@@ -101,7 +103,15 @@ public class LandingFragment extends Fragment {
                             currentUsername.setOnClickListener(new View.OnClickListener(){
                                 @Override
                                 public void onClick(View view){//this is an anonymous inner class
-                                    Toast.makeText(getActivity(), s.getStatus().toString(), Toast.LENGTH_LONG).show();
+                                    //Toast.makeText(getActivity(), s.getStatus().toString(), Toast.LENGTH_LONG).show();
+                                    new AlertDialog.Builder(getActivity()).setTitle("Log").setMessage(s.getStatus().toString())
+                                            .setNegativeButton("Close", null)
+                                            .setPositiveButton("Change Status", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    s.setStatus("OK");
+                                                }
+                                            });
                                 }
                             });
                         }
