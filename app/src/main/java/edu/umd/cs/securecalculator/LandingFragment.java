@@ -1,5 +1,6 @@
 package edu.umd.cs.securecalculator;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -15,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,7 +26,8 @@ import com.google.firebase.database.ValueEventListener;
 
 public class LandingFragment extends Fragment {
     private final String TAG = getClass().getSimpleName();
-    LinearLayout okL, helpL, outofAppL, logoutLt;
+    private Context mActivity = null;
+    LinearLayout okL, helpL, outofAppL, logoutL;
     String classID, directoryID;
 
     private LoginActivity loginActivity;
@@ -79,7 +80,7 @@ public class LandingFragment extends Fragment {
                             Log.d(TAG, "Processing " + s.getDirectoryID() + " with status " + s.getStatus()
                                         + " and " + s.getLog().size() + " entries in log");
 
-                            TextView currentUsername = new TextView(getActivity());
+                            TextView currentUsername = new TextView(mActivity);
                             currentUsername.setText(s.getDirectoryID());
 
                             LinearLayout.LayoutParams currentUsernameParams = new LinearLayout.LayoutParams(
@@ -104,7 +105,7 @@ public class LandingFragment extends Fragment {
                                 @Override
                                 public void onClick(View view){//this is an anonymous inner class
                                     //Toast.makeText(getActivity(), s.getStatus().toString(), Toast.LENGTH_LONG).show();
-                                    new AlertDialog.Builder(getActivity()).setTitle("Log").setMessage(s.getStatus().toString())
+                                    new AlertDialog.Builder(mActivity).setTitle("Log").setMessage(s.getStatus().toString())
                                             .setNegativeButton("Close", null)
                                             .setPositiveButton("Change Status", new DialogInterface.OnClickListener() {
                                                 @Override
@@ -162,6 +163,12 @@ public class LandingFragment extends Fragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mActivity = getActivity();
     }
 
     public static LandingFragment newInstance() {
