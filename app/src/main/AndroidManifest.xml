@@ -25,7 +25,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LandingActivity" />
+        <activity
+            android:name=".LandingActivity"
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"></activity>
     </application>
 
 </manifest>

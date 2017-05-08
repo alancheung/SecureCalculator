@@ -38,6 +38,7 @@ public class LandingFragment extends Fragment {
     @Override
     public void onCreate(Bundle save){
         super.onCreate(save);
+
         setHasOptionsMenu(true);
 
         // Init Firebase DB
@@ -46,10 +47,10 @@ public class LandingFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflator,ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflator, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflator, container, savedInstanceState);
-        setHasOptionsMenu(true);
-        View view = inflator.inflate(R.layout.fragment_landing, container,false);
+        View view = inflator.inflate(R.layout.fragment_landing, container, false);
+
         okL = (LinearLayout) view.findViewById(R.id.ok_column);
         helpL = (LinearLayout) view.findViewById(R.id.help_column);
         outofAppL = (LinearLayout) view.findViewById(R.id.other_column);
@@ -128,8 +129,10 @@ public class LandingFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu (Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu,inflater);
-        Log.d(TAG,"OnCreateOptionsMenu");
+
         inflater.inflate(R.menu.fragment_landing, menu);
+
+        Log.d(TAG,"OnCreateOptionsMenu");
     }
 
     @Override
@@ -149,7 +152,7 @@ public class LandingFragment extends Fragment {
                                     Log.d(TAG, "Processing " + s.getDirectoryID() + " with status " + s.getStatus()
                                             + " and " + s.getLog().size() + " entries in log");
 
-                                    dbInteraction.updateStatus(classID,directoryID,FireDatabaseConstants.LOG_OUT_STATUS);
+                                    dbInteraction.updateStatus(classID, s.getDirectoryID(), FireDatabaseConstants.LOG_OUT_STATUS);
                                 }
                             }
                             @Override

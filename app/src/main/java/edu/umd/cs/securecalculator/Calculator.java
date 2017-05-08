@@ -2,8 +2,6 @@ package edu.umd.cs.securecalculator;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
@@ -745,7 +743,7 @@ public class Calculator extends AppCompatActivity {
 		super.onStart();
 		lifeCycleLog.add("onStart: Calculator visible to user.");
 
-		ConnectivityManager cm =
+		/*ConnectivityManager cm =
 				(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
 		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -753,7 +751,7 @@ public class Calculator extends AppCompatActivity {
 				activeNetwork.isConnectedOrConnecting();
 		if(!isConnected){
 			lifeCycleLog.add("Internet not connected");
-		}
+		}*/
 
 
 	}
@@ -763,7 +761,7 @@ public class Calculator extends AppCompatActivity {
 		super.onRestart();
 		lifeCycleLog.add("onRestart: User returns to SecureCalculator.");
 
-		ConnectivityManager cm =
+		/*ConnectivityManager cm =
 				(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
 		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -771,7 +769,7 @@ public class Calculator extends AppCompatActivity {
 				activeNetwork.isConnectedOrConnecting();
 		if(!isConnected){
 			lifeCycleLog.add("Internet not connected");
-		}
+		}*/
 	}
 
 	@Override
@@ -788,7 +786,7 @@ public class Calculator extends AppCompatActivity {
 			lifeCycleLog.add("onResume: User can interact with app.");
 		}
 
-		ConnectivityManager cm =
+		/*ConnectivityManager cm =
 				(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
 		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -796,7 +794,7 @@ public class Calculator extends AppCompatActivity {
 				activeNetwork.isConnectedOrConnecting();
 		if(!isConnected){
 			lifeCycleLog.add("Internet not connected");
-		}
+		}*/
 	}
 
 	@Override
@@ -816,7 +814,7 @@ public class Calculator extends AppCompatActivity {
 
 		lifeCycleLog.add("onStop: User has left SecureCalculator at " + leftTime + ".");
 
-		ConnectivityManager cm =
+		/*ConnectivityManager cm =
 				(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
 		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -824,7 +822,7 @@ public class Calculator extends AppCompatActivity {
 				activeNetwork.isConnectedOrConnecting();
 		if(!isConnected){
 			lifeCycleLog.add("Internet not connected");
-		}
+		}*/
 	}
 
 	@Override
