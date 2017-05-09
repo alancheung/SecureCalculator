@@ -87,74 +87,76 @@ public class LandingFragment extends Fragment {
                         Log.d(TAG, "Num of students: " + dataSnapshot.getChildrenCount());
                         for (DataSnapshot post : dataSnapshot.getChildren()) {
                             final User s = post.getValue(User.class);
-                            Log.d(TAG, "Processing " + s.getDirectoryID() + " with status " + s.getStatus()
+
+                            if (s != null) {
+                                Log.d(TAG, "Processing " + s.getDirectoryID() + " with status " + s.getStatus()
                                         + " and " + s.getLog().size() + " entries in log");
 
-                            final TextView currentUsername = new TextView(mActivity);
-                            currentUsername.setText(s.getDirectoryID());
+                                final TextView currentUsername = new TextView(mActivity);
+                                currentUsername.setText(s.getDirectoryID());
 
-                            LinearLayout.LayoutParams currentUsernameParams = new LinearLayout.LayoutParams(
-                                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                            currentUsernameParams.gravity = Gravity.CENTER;
-                            currentUsername.setLayoutParams(currentUsernameParams);
+                                LinearLayout.LayoutParams currentUsernameParams = new LinearLayout.LayoutParams(
+                                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                currentUsernameParams.gravity = Gravity.CENTER;
+                                currentUsername.setLayoutParams(currentUsernameParams);
 
-                            if(s.getStatus().equals(FireDatabaseConstants.OK_STATUS)){//status is ok
-                                currentUsername.setTextColor(Color.GREEN);
-                                okL.addView(currentUsername);
-                            } else if(s.getStatus().equals(FireDatabaseConstants.HELP_STATUS)){//status is help
-                                currentUsername.setTextColor(Color.YELLOW);
-                                helpL.addView(currentUsername);
-                            } else if(s.getStatus().equals(FireDatabaseConstants.DONE_STATUS)) {//status is logged out
-                                currentUsername.setTextColor(Color.GRAY);
-                                logoutL.addView(currentUsername);
-                            } else {//status is other
-                                currentUsername.setTextColor(Color.RED);
-                                outofAppL.addView(currentUsername);
-                            }
-                            currentUsername.setOnClickListener(new View.OnClickListener(){
-                                @Override
-                                public void onClick(View view){//this is an anonymous inner class
-                                    if (s.getStatus().equals("HELP")) {
-                                        dbInteraction.updateStatus(classID,currentUsername.getText().toString(),FireDatabaseConstants.OK_STATUS);
-                                    }
+                                if (s.getStatus().equals(FireDatabaseConstants.OK_STATUS)) {//status is ok
+                                    currentUsername.setTextColor(Color.GREEN);
+                                    okL.addView(currentUsername);
+                                } else if (s.getStatus().equals(FireDatabaseConstants.HELP_STATUS)) {//status is help
+                                    currentUsername.setTextColor(Color.YELLOW);
+                                    helpL.addView(currentUsername);
+                                } else if (s.getStatus().equals(FireDatabaseConstants.DONE_STATUS)) {//status is logged out
+                                    currentUsername.setTextColor(Color.GRAY);
+                                    logoutL.addView(currentUsername);
+                                } else {//status is other
+                                    currentUsername.setTextColor(Color.RED);
+                                    outofAppL.addView(currentUsername);
+                                }
+                                currentUsername.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {//this is an anonymous inner class
+                                        if (s.getStatus().equals("HELP")) {
+                                            dbInteraction.updateStatus(classID, currentUsername.getText().toString(), FireDatabaseConstants.OK_STATUS);
+                                        }
 
-                                    //Alert with Log
-                                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.myDialog));
+                                        //Alert with Log
+                                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.myDialog));
 
-                                    alertDialog.setTitle("Student Activity Log");
-                                    final LinearLayout layout = new LinearLayout(getActivity());
-                                    layout.setOrientation(LinearLayout.VERTICAL);
-                                    ArrayList<String> temp = s.getLog();
-                                    TextView[] logs = new TextView[temp.size()];
-                                    for (int i = 0; i < logs.length;i++) {
-                                        logs[i] = new TextView(getActivity());
-                                        logs[i].setText(temp.get(i));
-                                        layout.addView(logs[i]);
-                                    }
-                                    final ScrollView scrollView = new ScrollView (getActivity());
-                                    scrollView.addView(layout);
-                                    alertDialog.setView(scrollView);
+                                        alertDialog.setTitle("Student Activity Log");
+                                        final LinearLayout layout = new LinearLayout(getActivity());
+                                        layout.setOrientation(LinearLayout.VERTICAL);
+                                        ArrayList<String> temp = s.getLog();
+                                        TextView[] logs = new TextView[temp.size()];
+                                        for (int i = 0; i < logs.length; i++) {
+                                            logs[i] = new TextView(getActivity());
+                                            logs[i].setText(temp.get(i));
+                                            layout.addView(logs[i]);
+                                        }
+                                        final ScrollView scrollView = new ScrollView(getActivity());
+                                        scrollView.addView(layout);
+                                        alertDialog.setView(scrollView);
 
-                                    alertDialog.setPositiveButton("Clear Log",
-                                            new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    ArrayList<String> temp = new ArrayList<String>();
-                                                    temp.add(getCurrentTime()+" - Teacher cleared log");
-                                                    dbInteraction.updateLog(classID,s.getDirectoryID(),temp);
-                                                }
-                                            });
+                                        alertDialog.setPositiveButton("Clear Log",
+                                                new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        ArrayList<String> temp = new ArrayList<String>();
+                                                        temp.add(getCurrentTime() + " - Teacher cleared log");
+                                                        dbInteraction.updateLog(classID, s.getDirectoryID(), temp);
+                                                    }
+                                                });
 
-                                    alertDialog.setNegativeButton("OK",
-                                            new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    dialog.cancel();
-                                                }
-                                            });
+                                        alertDialog.setNegativeButton("OK",
+                                                new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        dialog.cancel();
+                                                    }
+                                                });
 
-                                    alertDialog.show();
+                                        alertDialog.show();
 
-                                    //Toast.makeText(getActivity(), s.getStatus().toString(), Toast.LENGTH_LONG).show();
-                                    /*new AlertDialog.Builder(mActivity).setTitle("Log").setMessage(s.getStatus().toString())
+                                        //Toast.makeText(getActivity(), s.getStatus().toString(), Toast.LENGTH_LONG).show();
+                                        /*new AlertDialog.Builder(mActivity).setTitle("Log").setMessage(s.getStatus().toString())
                                             .setNegativeButton("Close", null)
                                             .setPositiveButton("Change Status", new DialogInterface.OnClickListener() {
                                                 @Override
@@ -162,8 +164,10 @@ public class LandingFragment extends Fragment {
                                                     s.setStatus("OK");
                                                 }
                                             });*/
-                                }
-                            });
+                                    }
+                                });
+
+                            }
                         }
                     }
                     @Override
