@@ -27,7 +27,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 
 public class LandingFragment extends Fragment {
@@ -132,6 +134,15 @@ public class LandingFragment extends Fragment {
                                     final ScrollView scrollView = new ScrollView (getActivity());
                                     scrollView.addView(layout);
                                     alertDialog.setView(scrollView);
+
+                                    alertDialog.setPositiveButton("Clear Log",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    ArrayList<String> temp = new ArrayList<String>();
+                                                    temp.add(getCurrentTime()+" - Teacher cleared log");
+                                                    dbInteraction.updateLog(classID,s.getDirectoryID(),temp);
+                                                }
+                                            });
 
                                     alertDialog.setNegativeButton("OK",
                                             new DialogInterface.OnClickListener() {
@@ -250,5 +261,13 @@ public class LandingFragment extends Fragment {
         LandingFragment fragment = new LandingFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    // Gets the current time and returns it in the format: hour:minute:second.millisecond
+    private String getCurrentTime() {
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+        System.out.println(sdf.format(cal.getTime()).toString());
+        return(sdf.format(cal.getTime()));
     }
 }
