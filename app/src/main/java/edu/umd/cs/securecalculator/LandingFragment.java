@@ -162,6 +162,7 @@ public class LandingFragment extends Fragment {
                         });
                 dbInteraction.setClassNotInSession(classID);
                 //TODO download and parse all logs
+                getActivity().finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

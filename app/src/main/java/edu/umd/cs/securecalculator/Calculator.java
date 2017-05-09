@@ -113,7 +113,8 @@ public class Calculator extends AppCompatActivity {
         fireDB = FirebaseDatabase.getInstance();
         database = fireDB.getReference();
 
-		modifyUserStatus("OK");
+		//Logging in sets student status to OK
+		dbInteraction.updateStatus(classID,directoryID,FireDatabaseConstants.OK_STATUS);
 
 		lifeCycleLog = new ArrayList<String>();
 		lifeCycleLog.add("onCreate: Calculator view created.");
