@@ -833,7 +833,7 @@ public class Calculator extends AppCompatActivity {
 		userLeftApp = true;
 		leftTime = getCurrentTime();
 
-		modifyUserStatus("onStop");
+		modifyUserStatus(FireDatabaseConstants.LOG_OUT_STATUS);
 
 		appendToLog(getCurrentTime()+" - onStop: User has left SecureCalculator at " + leftTime + ".");
 

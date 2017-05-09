@@ -20,7 +20,7 @@
     <string name="ok_label">OK</string>
     <string name="help_label">HELP</string>
     <string name="done_label">DONE</string>
-    <string name="logged_out_label">LOGGED OUT</string>
+    <string name="logged_out_label">ISSUE</string>
     <string name="title_activity_bs">Asynch</string>
 
     <string name="end_class">End Class</string>
