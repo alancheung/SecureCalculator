@@ -73,5 +73,18 @@ public class dbInteraction {
         return false;
     }
 
+    static void addAuthUser(String classID, String directoryID){
+        database.child(FireDatabaseConstants.DB_CLASS_CHILD)
+                .child(classID)
+                .child(FireDatabaseConstants.DB_META_CHILD)
+                .child(FireDatabaseConstants.META_USER)
+                .child(directoryID).push();
+        database.child(FireDatabaseConstants.DB_CLASS_CHILD)
+                .child(classID)
+                .child(FireDatabaseConstants.DB_META_CHILD)
+                .child(FireDatabaseConstants.META_USER)
+                .child(directoryID).setValue(true);
+    }
+
 
 }

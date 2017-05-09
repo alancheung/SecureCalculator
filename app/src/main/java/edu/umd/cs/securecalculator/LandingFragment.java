@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.view.ContextThemeWrapper;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -14,8 +15,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -155,6 +158,7 @@ public class LandingFragment extends Fragment {
                                     dbInteraction.updateStatus(classID, s.getDirectoryID(), FireDatabaseConstants.LOG_OUT_STATUS);
                                 }
                             }
+
                             @Override
                             public void onCancelled(DatabaseError databaseError) {
                                 // Well fuck.
@@ -164,6 +168,35 @@ public class LandingFragment extends Fragment {
                 //TODO download and parse all logs
                 getActivity().finish();
                 return true;
+            case R.id.menu_item_add_auth_user:
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.myDialog));
+
+                alertDialog.setTitle("Add Authorized User");
+                alertDialog.setMessage("Enter New User's Directory ID");
+                final EditText input = new EditText(getActivity());
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT);
+                input.setLayoutParams(lp);
+                alertDialog.setView(input);
+
+                alertDialog.setPositiveButton("Submit",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                String user = input.getText().toString();
+                                Toast.makeText(getActivity(), "User Added", Toast.LENGTH_SHORT).show();
+                                dbInteraction.addAuthUser(classID,user);
+                            }
+                        });
+
+                alertDialog.setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+
+                alertDialog.show();
             default:
                 return super.onOptionsItemSelected(item);
         }
