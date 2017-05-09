@@ -595,7 +595,7 @@ public class Calculator extends AppCompatActivity {
 		String dID = called.getStringExtra(DIRECTORY_ID_EXTRA);
 		switch (item.getItemId()) {
 			case R.id.menu_item_log_out:
-				dbInteraction.updateStatus(cID, dID, FireDatabaseConstants.LOG_OUT_STATUS);
+				validFinish = true;
 				finish();
 				return true;
 			case R.id.menu_item_request_help:
