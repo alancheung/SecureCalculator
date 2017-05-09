@@ -1,7 +1,10 @@
 package edu.umd.cs.securecalculator;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -34,6 +37,28 @@ public class dbInteraction {
                 .child(FireDatabaseConstants.DB_USER_CHILD)
                 .child(directoryID)
                 .child(FireDatabaseConstants.USER_LOG).setValue(log);
+    }
+
+    //Append String to Log
+    static void appendToLog (final String classID, final String directoryID, String update) {
+        final String newUpdate = update;
+        database.child(FireDatabaseConstants.DB_CLASS_CHILD)
+                .child(classID)
+                .child(FireDatabaseConstants.DB_USER_CHILD)
+                .child(directoryID)
+                .addListenerForSingleValueEvent(new ValueEventListener() { // Database crashed when it was addValueEventListener
+                    @Override
+                    public void onDataChange (DataSnapshot snapshot) {
+                        final User s = snapshot.getValue(User.class);
+                        ArrayList<String> temp = s.getLog();
+                        temp.add(newUpdate);
+                        dbInteraction.updateLog(classID,directoryID,temp);
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        // Well fuck.
+                    }
+                });
     }
 
     static void addNewClass(String classID, String directoryID){

@@ -854,7 +854,7 @@ public class Calculator extends AppCompatActivity {
         String status;
         if(validFinish){
             status = FireDatabaseConstants.DONE_STATUS;
-            appendToLog(getCurrentTime()+" - onDestroy: User has quit the app.");
+            appendToLog(getCurrentTime()+" - onDestroy: User has successfully logged out.");
         } else{
             status = FireDatabaseConstants.LOG_OUT_STATUS;
             appendToLog(getCurrentTime()+" - onDestroy: User has left the app.");

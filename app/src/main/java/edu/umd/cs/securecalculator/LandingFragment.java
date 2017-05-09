@@ -102,7 +102,7 @@ public class LandingFragment extends Fragment {
                             } else if(s.getStatus().equals(FireDatabaseConstants.HELP_STATUS)){//status is help
                                 currentUsername.setTextColor(Color.YELLOW);
                                 helpL.addView(currentUsername);
-                            } else if(s.getStatus().equals(FireDatabaseConstants.LOG_OUT_STATUS)) {//status is logged out
+                            } else if(s.getStatus().equals(FireDatabaseConstants.DONE_STATUS)) {//status is logged out
                                 currentUsername.setTextColor(Color.GRAY);
                                 logoutL.addView(currentUsername);
                             } else {//status is other
@@ -189,7 +189,8 @@ public class LandingFragment extends Fragment {
                                     Log.d(TAG, "Processing " + s.getDirectoryID() + " with status " + s.getStatus()
                                             + " and " + s.getLog().size() + " entries in log");
 
-                                    dbInteraction.updateStatus(classID, s.getDirectoryID(), FireDatabaseConstants.LOG_OUT_STATUS);
+                                    dbInteraction.updateStatus(classID, s.getDirectoryID(), FireDatabaseConstants.DONE_STATUS);
+                                    // dbInteraction.appendToLog(classID, s.getDirectoryID(), "Instructor has ended the class.");
                                 }
                             }
 
@@ -199,7 +200,9 @@ public class LandingFragment extends Fragment {
                             }
                         });
                 dbInteraction.setClassNotInSession(classID);
+                Toast.makeText(getActivity().getApplicationContext(), classID + " is ending. Have a good day!", Toast.LENGTH_SHORT).show();
                 //TODO download and parse all logs
+
                 return true;
             case R.id.menu_item_add_auth_user:
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.myDialog));
