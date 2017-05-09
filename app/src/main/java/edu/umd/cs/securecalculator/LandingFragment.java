@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +26,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 
 public class LandingFragment extends Fragment {
@@ -84,7 +87,7 @@ public class LandingFragment extends Fragment {
                             Log.d(TAG, "Processing " + s.getDirectoryID() + " with status " + s.getStatus()
                                         + " and " + s.getLog().size() + " entries in log");
 
-                            TextView currentUsername = new TextView(mActivity);
+                            final TextView currentUsername = new TextView(mActivity);
                             currentUsername.setText(s.getDirectoryID());
 
                             LinearLayout.LayoutParams currentUsernameParams = new LinearLayout.LayoutParams(
@@ -92,13 +95,13 @@ public class LandingFragment extends Fragment {
                             currentUsernameParams.gravity = Gravity.CENTER;
                             currentUsername.setLayoutParams(currentUsernameParams);
 
-                            if(s.getStatus().equals("OK")){//status is ok
+                            if(s.getStatus().equals(FireDatabaseConstants.OK_STATUS)){//status is ok
                                 currentUsername.setTextColor(Color.GREEN);
                                 okL.addView(currentUsername);
-                            } else if(s.getStatus().equals("HELP")){//status is help
+                            } else if(s.getStatus().equals(FireDatabaseConstants.HELP_STATUS)){//status is help
                                 currentUsername.setTextColor(Color.YELLOW);
                                 helpL.addView(currentUsername);
-                            } else if(s.getStatus().equals("LOGGED_OUT")) {//status is logged out
+                            } else if(s.getStatus().equals(FireDatabaseConstants.LOG_OUT_STATUS)) {//status is logged out
                                 currentUsername.setTextColor(Color.GRAY);
                                 logoutL.addView(currentUsername);
                             } else {//status is other
@@ -108,15 +111,45 @@ public class LandingFragment extends Fragment {
                             currentUsername.setOnClickListener(new View.OnClickListener(){
                                 @Override
                                 public void onClick(View view){//this is an anonymous inner class
+                                    if (s.getStatus().equals("HELP")) {
+                                        dbInteraction.updateStatus(classID,currentUsername.getText().toString(),FireDatabaseConstants.OK_STATUS);
+                                    }
+
+                                    //Alert with Log
+                                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.myDialog));
+
+                                    alertDialog.setTitle("Student Activity Log");
+                                    final LinearLayout layout = new LinearLayout(getActivity());
+                                    layout.setOrientation(LinearLayout.VERTICAL);
+                                    ArrayList<String> temp = s.getLog();
+                                    TextView[] logs = new TextView[temp.size()];
+                                    for (int i = 0; i < logs.length;i++) {
+                                        logs[i] = new TextView(getActivity());
+                                        logs[i].setText(temp.get(i));
+                                        layout.addView(logs[i]);
+                                    }
+                                    final ScrollView scrollView = new ScrollView (getActivity());
+                                    scrollView.addView(layout);
+                                    alertDialog.setView(scrollView);
+
+                                    alertDialog.setNegativeButton("OK",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.cancel();
+                                                }
+                                            });
+
+                                    alertDialog.show();
+
                                     //Toast.makeText(getActivity(), s.getStatus().toString(), Toast.LENGTH_LONG).show();
-                                    new AlertDialog.Builder(mActivity).setTitle("Log").setMessage(s.getStatus().toString())
+                                    /*new AlertDialog.Builder(mActivity).setTitle("Log").setMessage(s.getStatus().toString())
                                             .setNegativeButton("Close", null)
                                             .setPositiveButton("Change Status", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     s.setStatus("OK");
                                                 }
-                                            });
+                                            });*/
                                 }
                             });
                         }
@@ -165,7 +198,6 @@ public class LandingFragment extends Fragment {
                             }
                         });
                 dbInteraction.setClassNotInSession(classID);
-                //TODO download and parse all logs
                 getActivity().finish();
                 return true;
             case R.id.menu_item_add_auth_user:
