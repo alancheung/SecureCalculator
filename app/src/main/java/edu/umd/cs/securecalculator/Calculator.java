@@ -25,6 +25,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+/**
+ * @author CMDann. Modified by UMD students.
+ * (https://github.com/CMDann/Simple-Android-Calculator)
+ */
 public class Calculator extends AppCompatActivity {
 
 	private final String SDK_VERSION = "1";

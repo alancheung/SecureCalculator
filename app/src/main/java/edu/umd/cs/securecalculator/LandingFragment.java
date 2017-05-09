@@ -287,7 +287,6 @@ public class LandingFragment extends Fragment {
                                 // Well fuck.
                             }
                         });
-                dbInteraction.setClassNotInSession(classID);
                 Toast.makeText(getActivity().getApplicationContext(), classID + " is ending. Have a good day!", Toast.LENGTH_SHORT).show();
                 //TODO download and parse all logs
 
