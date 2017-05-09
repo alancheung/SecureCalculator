@@ -124,13 +124,13 @@ public class LandingFragment extends Fragment {
 
                                         //Alert with option to set status or view log
                                         AlertDialog.Builder firstDialog = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.myDialog));
-                                        firstDialog.setTitle("Choose Student Action");
+                                        firstDialog.setTitle("Choose " + currentUsername.getText().toString()+ "'s Action");
                                         firstDialog.setPositiveButton("Change Status",
                                                 new DialogInterface.OnClickListener() {
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         //Alert with Status Change options
                                                         AlertDialog.Builder statusDialog = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.myDialog));
-                                                        statusDialog.setTitle("Change Student Status");
+                                                        statusDialog.setTitle("Change " + currentUsername.getText().toString() + "'s Status");
                                                         final LinearLayout layout = new LinearLayout (getActivity());
                                                         layout.setOrientation(LinearLayout.VERTICAL);
                                                         final RadioButton[] rb = new RadioButton[4];
