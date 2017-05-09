@@ -1,8 +1,12 @@
 package edu.umd.cs.securecalculator;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.view.ContextThemeWrapper;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -11,7 +15,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,9 +27,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
+
 public class LandingFragment extends Fragment {
     private final String TAG = getClass().getSimpleName();
-    LinearLayout okL, helpL, outofAppL, doneL;
+    private Context mActivity = null;
+    LinearLayout okL, helpL, outofAppL, logoutL;
     String classID, directoryID;
 
     private LoginActivity loginActivity;
@@ -42,14 +52,14 @@ public class LandingFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflator,ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflator, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflator, container, savedInstanceState);
-        setHasOptionsMenu(true);
-        View view = inflator.inflate(R.layout.fragment_landing, container,false);
+        View view = inflator.inflate(R.layout.fragment_landing, container, false);
+
         okL = (LinearLayout) view.findViewById(R.id.ok_column);
         helpL = (LinearLayout) view.findViewById(R.id.help_column);
         outofAppL = (LinearLayout) view.findViewById(R.id.other_column);
-        doneL = (LinearLayout) view.findViewById(R.id.logged_out_column);
+        logoutL = (LinearLayout) view.findViewById(R.id.logged_out_column);
 
         Bundle args = getArguments();
         classID = args.getString(Calculator.CLASS_ID_EXTRA);
@@ -69,8 +79,8 @@ public class LandingFragment extends Fragment {
                             helpL.removeViews(1, helpL.getChildCount()-1);
                         if(outofAppL.getChildCount() > 1)
                             outofAppL.removeViews(1, outofAppL.getChildCount()-1);
-                        if(doneL.getChildCount() > 1)
-                            doneL.removeViews(1, doneL.getChildCount() - 1);
+                        if(logoutL.getChildCount() > 1)
+                            logoutL.removeViews(1, logoutL.getChildCount() - 1);
 
                         Log.d(TAG, "Num of students: " + dataSnapshot.getChildrenCount());
                         for (DataSnapshot post : dataSnapshot.getChildren()) {
@@ -78,7 +88,7 @@ public class LandingFragment extends Fragment {
                             Log.d(TAG, "Processing " + s.getDirectoryID() + " with status " + s.getStatus()
                                         + " and " + s.getLog().size() + " entries in log");
 
-                            TextView currentUsername = new TextView(getActivity());
+                            final TextView currentUsername = new TextView(mActivity);
                             currentUsername.setText(s.getDirectoryID());
 
                             LinearLayout.LayoutParams currentUsernameParams = new LinearLayout.LayoutParams(
@@ -88,42 +98,61 @@ public class LandingFragment extends Fragment {
 
                             if(s.getStatus().equals(FireDatabaseConstants.OK_STATUS)){//status is ok
                                 currentUsername.setTextColor(Color.GREEN);
-                                currentUsername.setOnClickListener(new View.OnClickListener(){
-                                    @Override
-                                    public void onClick(View view){//this is an anonymous inner class
-                                        Toast.makeText(getActivity(), s.getDirectoryID()+":"+s.getStatus().toString(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
                                 okL.addView(currentUsername);
                             } else if(s.getStatus().equals(FireDatabaseConstants.HELP_STATUS)){//status is help
-                                helpL.addView(currentUsername);
                                 currentUsername.setTextColor(Color.YELLOW);
-                                currentUsername.setOnClickListener(new View.OnClickListener(){
-                                    @Override
-                                    public void onClick(View view){//this is an anonymous inner class
-                                        Toast.makeText(getActivity(), "Resetting "+ s.getDirectoryID()+" to OKAY".toString(), Toast.LENGTH_SHORT).show();
-                                        dbInteraction.updateStatus(classID, s.getDirectoryID(), FireDatabaseConstants.OK_STATUS);
-                                    }
-                                });
-                            } else if(s.getStatus().equals(FireDatabaseConstants.DONE_STATUS)) {//status is logged out (SORRY BUT DONE IS GOOD)
-                                doneL.addView(currentUsername);
+                                helpL.addView(currentUsername);
+                            } else if(s.getStatus().equals(FireDatabaseConstants.LOG_OUT_STATUS)) {//status is logged out
                                 currentUsername.setTextColor(Color.GRAY);
-                                currentUsername.setOnClickListener(new View.OnClickListener(){
-                                    @Override
-                                    public void onClick(View view){//this is an anonymous inner class
-                                        Toast.makeText(getActivity(), s.getDirectoryID()+":"+s.getStatus().toString(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                                logoutL.addView(currentUsername);
                             } else {//status is other
-                                outofAppL.addView(currentUsername);
                                 currentUsername.setTextColor(Color.RED);
-                                currentUsername.setOnClickListener(new View.OnClickListener(){
-                                    @Override
-                                    public void onClick(View view){//this is an anonymous inner class
-                                        Toast.makeText(getActivity(), s.getDirectoryID()+":"+s.getStatus().toString(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                                outofAppL.addView(currentUsername);
                             }
+                            currentUsername.setOnClickListener(new View.OnClickListener(){
+                                @Override
+                                public void onClick(View view){//this is an anonymous inner class
+                                    if (s.getStatus().equals("HELP")) {
+                                        dbInteraction.updateStatus(classID,currentUsername.getText().toString(),FireDatabaseConstants.OK_STATUS);
+                                    }
+
+                                    //Alert with Log
+                                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.myDialog));
+
+                                    alertDialog.setTitle("Student Activity Log");
+                                    final LinearLayout layout = new LinearLayout(getActivity());
+                                    layout.setOrientation(LinearLayout.VERTICAL);
+                                    ArrayList<String> temp = s.getLog();
+                                    TextView[] logs = new TextView[temp.size()];
+                                    for (int i = 0; i < logs.length;i++) {
+                                        logs[i] = new TextView(getActivity());
+                                        logs[i].setText(temp.get(i));
+                                        layout.addView(logs[i]);
+                                    }
+                                    final ScrollView scrollView = new ScrollView (getActivity());
+                                    scrollView.addView(layout);
+                                    alertDialog.setView(scrollView);
+
+                                    alertDialog.setNegativeButton("OK",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.cancel();
+                                                }
+                                            });
+
+                                    alertDialog.show();
+
+                                    //Toast.makeText(getActivity(), s.getStatus().toString(), Toast.LENGTH_LONG).show();
+                                    /*new AlertDialog.Builder(mActivity).setTitle("Log").setMessage(s.getStatus().toString())
+                                            .setNegativeButton("Close", null)
+                                            .setPositiveButton("Change Status", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    s.setStatus("OK");
+                                                }
+                                            });*/
+                                }
+                            });
                         }
                     }
                     @Override
@@ -137,8 +166,10 @@ public class LandingFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu (Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu,inflater);
-        Log.d(TAG,"OnCreateOptionsMenu");
+
         inflater.inflate(R.menu.fragment_landing, menu);
+
+        Log.d(TAG,"OnCreateOptionsMenu");
     }
 
     @Override
@@ -158,9 +189,10 @@ public class LandingFragment extends Fragment {
                                     Log.d(TAG, "Processing " + s.getDirectoryID() + " with status " + s.getStatus()
                                             + " and " + s.getLog().size() + " entries in log");
 
-                                    dbInteraction.updateStatus(classID,directoryID,FireDatabaseConstants.LOG_OUT_STATUS);
+                                    dbInteraction.updateStatus(classID, s.getDirectoryID(), FireDatabaseConstants.LOG_OUT_STATUS);
                                 }
                             }
+
                             @Override
                             public void onCancelled(DatabaseError databaseError) {
                                 // Well fuck.
@@ -169,9 +201,44 @@ public class LandingFragment extends Fragment {
                 dbInteraction.setClassNotInSession(classID);
                 //TODO download and parse all logs
                 return true;
+            case R.id.menu_item_add_auth_user:
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.myDialog));
+
+                alertDialog.setTitle("Add Authorized User");
+                alertDialog.setMessage("Enter New User's Directory ID");
+                final EditText input = new EditText(getActivity());
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT);
+                input.setLayoutParams(lp);
+                alertDialog.setView(input);
+
+                alertDialog.setPositiveButton("Submit",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                String user = input.getText().toString();
+                                Toast.makeText(getActivity(), "User Added", Toast.LENGTH_SHORT).show();
+                                dbInteraction.addAuthUser(classID,user);
+                            }
+                        });
+
+                alertDialog.setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+
+                alertDialog.show();
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mActivity = getActivity();
     }
 
     public static LandingFragment newInstance() {

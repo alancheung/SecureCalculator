@@ -15,13 +15,15 @@ import android.view.View.OnKeyListener;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 public class Calculator extends AppCompatActivity {
 
@@ -33,7 +35,6 @@ public class Calculator extends AppCompatActivity {
 	private GestureDetector gestureDetector;
 
 	// Lifecycle variables
-	private List<String> lifeCycleLog;
 	private boolean userLeftApp = false;
 	private String leftTime = "";
 	private String returnTime = "";
@@ -116,12 +117,31 @@ public class Calculator extends AppCompatActivity {
         fireDB = FirebaseDatabase.getInstance();
         database = fireDB.getReference();
 
-		modifyUserStatus("OK");
+		//Logging in sets student status to OK
+		dbInteraction.updateStatus(classID,directoryID,FireDatabaseConstants.OK_STATUS);
 
-		lifeCycleLog = new ArrayList<String>();
-		lifeCycleLog.add("onCreate: Calculator view created.");
+		appendToLog(getCurrentTime()+" - onCreate: Calculator view created.");
 
         validFinish = false;
+		//Kicks student out once Teacher ends class
+		database.child(FireDatabaseConstants.DB_CLASS_CHILD)
+				.child(classID)
+				.child(FireDatabaseConstants.DB_USER_CHILD)
+				.child(directoryID)
+				.addValueEventListener(new ValueEventListener() {
+					@Override
+					public void onDataChange (DataSnapshot snapshot) {
+						final User s = snapshot.getValue(User.class);
+						if (s.getStatus().equals(FireDatabaseConstants.LOG_OUT_STATUS)) {
+							finish();
+						}
+					}
+					@Override
+					public void onCancelled(DatabaseError databaseError) {
+						// Well fuck.
+					}
+				});
+
 
 		this.setTitle(" ");
 
@@ -575,8 +595,7 @@ public class Calculator extends AppCompatActivity {
 		String dID = called.getStringExtra(DIRECTORY_ID_EXTRA);
 		switch (item.getItemId()) {
 			case R.id.menu_item_log_out:
-                dbInteraction.updateStatus(cID, dID, FireDatabaseConstants.DONE_STATUS);
-                validFinish = true;
+				dbInteraction.updateStatus(cID, dID, FireDatabaseConstants.LOG_OUT_STATUS);
 				finish();
 				return true;
 			case R.id.menu_item_request_help:
@@ -745,13 +764,35 @@ public class Calculator extends AppCompatActivity {
 	@Override
 	public void onStart() {
 		super.onStart();
-		lifeCycleLog.add("onStart: Calculator visible to user.");
+		appendToLog(getCurrentTime()+" - onStart: Calculator visible to user.");
+
+		/*ConnectivityManager cm =
+				(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+		boolean isConnected = activeNetwork != null &&
+				activeNetwork.isConnectedOrConnecting();
+		if(!isConnected){
+			lifeCycleLog.add("Internet not connected");
+		}*/
+
+
 	}
 
 	@Override
 	public void onRestart() {
 		super.onRestart();
-		lifeCycleLog.add("onRestart: User returns to SecureCalculator.");
+		appendToLog(getCurrentTime()+" - onRestart: User returns to SecureCalculator.");
+
+		/*ConnectivityManager cm =
+				(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+		boolean isConnected = activeNetwork != null &&
+				activeNetwork.isConnectedOrConnecting();
+		if(!isConnected){
+			lifeCycleLog.add("Internet not connected");
+		}*/
 	}
 
 	@Override
@@ -762,17 +803,27 @@ public class Calculator extends AppCompatActivity {
 			userLeftApp = false;
 
 			returnTime = getCurrentTime();
-			lifeCycleLog.add("onResume: User has returned to the app at " + returnTime + ".");
+			appendToLog(getCurrentTime()+" - onResume: User has returned to the app at " + returnTime + ".");
 		}
 		else {
-			lifeCycleLog.add("onResume: User can interact with app.");
+			appendToLog(getCurrentTime()+" - onResume: User can interact with app.");
 		}
+
+		/*ConnectivityManager cm =
+				(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+		boolean isConnected = activeNetwork != null &&
+				activeNetwork.isConnectedOrConnecting();
+		if(!isConnected){
+			lifeCycleLog.add("Internet not connected");
+		}*/
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		lifeCycleLog.add("onPause: User is leaving SecureCalculator.");
+		appendToLog(getCurrentTime()+" - onPause: User is leaving SecureCalculator.");
 	}
 
 	@Override
@@ -784,7 +835,17 @@ public class Calculator extends AppCompatActivity {
 
 		modifyUserStatus("onStop");
 
-		lifeCycleLog.add("onStop: User has left SecureCalculator at " + leftTime + ".");
+		appendToLog(getCurrentTime()+" - onStop: User has left SecureCalculator at " + leftTime + ".");
+
+		/*ConnectivityManager cm =
+				(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+		boolean isConnected = activeNetwork != null &&
+				activeNetwork.isConnectedOrConnecting();
+		if(!isConnected){
+			lifeCycleLog.add("Internet not connected");
+		}*/
 	}
 
 	@Override
@@ -793,10 +854,10 @@ public class Calculator extends AppCompatActivity {
         String status;
         if(validFinish){
             status = FireDatabaseConstants.DONE_STATUS;
-            lifeCycleLog.add("onDestroy: User has quit the app through valid logout.");
+            appendToLog(getCurrentTime()+" - onDestroy: User has quit the app.");
         } else{
             status = FireDatabaseConstants.LOG_OUT_STATUS;
-            lifeCycleLog.add("onDestroy: User has left the app through some other means.");
+            appendToLog(getCurrentTime()+" - onDestroy: User has left the app.");
         }
 
 		modifyUserStatus(status);
@@ -811,8 +872,30 @@ public class Calculator extends AppCompatActivity {
 	}
 
 	// Modifies the users status in the database - called in lifecycle methods
-	private void modifyUserStatus(String status) {
+	public void modifyUserStatus(String status) {
 		dbInteraction.updateStatus(classID, directoryID, status);
+	}
+
+	//Append String to Log
+	public void appendToLog (String update) {
+		final String newUpdate = update;
+		database.child(FireDatabaseConstants.DB_CLASS_CHILD)
+				.child(classID)
+				.child(FireDatabaseConstants.DB_USER_CHILD)
+				.child(directoryID)
+				.addListenerForSingleValueEvent(new ValueEventListener() { // Database crashed when it was addValueEventListener
+					@Override
+					public void onDataChange (DataSnapshot snapshot) {
+						final User s = snapshot.getValue(User.class);
+						ArrayList<String> temp = s.getLog();
+						temp.add(newUpdate);
+						dbInteraction.updateLog(classID,directoryID,temp);
+					}
+					@Override
+					public void onCancelled(DatabaseError databaseError) {
+						// Well fuck.
+					}
+				});
 	}
 
 }
