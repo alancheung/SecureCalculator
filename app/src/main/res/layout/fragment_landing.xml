@@ -52,13 +52,13 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center_horizontal"
-        android:id="@+id/other_column"
+        android:id="@+id/logged_out_column"
         android:layout_weight="1">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/other_label"
+            android:text="@string/logged_out_label"
             android:paddingBottom="5dp">
         </TextView>
     </LinearLayout>
@@ -68,13 +68,13 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center_horizontal"
-        android:id="@+id/logged_out_column"
+        android:id="@+id/done_column"
         android:layout_weight="1">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/logged_out_label"
+            android:text="@string/done_label"
             android:paddingBottom="5dp"/>
     </LinearLayout>
 

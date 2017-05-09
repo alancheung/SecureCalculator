@@ -19,7 +19,7 @@
 
     <string name="ok_label">OK</string>
     <string name="help_label">HELP</string>
-    <string name="other_label">OTHER</string>
+    <string name="done_label">DONE</string>
     <string name="logged_out_label">LOGGED OUT</string>
     <string name="title_activity_bs">Asynch</string>
 
