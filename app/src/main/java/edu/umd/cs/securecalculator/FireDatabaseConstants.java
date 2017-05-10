@@ -19,4 +19,5 @@ public class FireDatabaseConstants {
     public static final String HELP_STATUS = "HELP";
     public static final String LOG_OUT_STATUS = "LOGGED_OUT";
     public static final String DONE_STATUS = "DONE";
+    public static final String NOT_OK_STATUS = "ISSUE";
 }

@@ -63,6 +63,7 @@ public class LoginActivity extends AppCompatActivity{
         mSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d(TAG, "Sign in button was clicked.");
                 attemptLogin();
             }
         });
@@ -146,9 +147,11 @@ public class LoginActivity extends AppCompatActivity{
             focusView.requestFocus();
         } else {
             // Basic login attempt.
+            Log.d(TAG, "Login attempt: Pre-Firebase");
             database.child(FireDatabaseConstants.DB_CLASS_CHILD).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dbData) {
+                    Log.d(TAG, "Connection to firebase has been established.");
                     // Does this class exists yet?
                     if (dbData.hasChild(classID)){
                         // is the class in session
@@ -181,7 +184,7 @@ public class LoginActivity extends AppCompatActivity{
                                             .child(FireDatabaseConstants.DB_USER_CHILD)
                                             .child(directoryID)
                                             .getValue(User.class)
-                                            .getStatus().equals("LOGGED_OUT")) {
+                                            .getStatus().equals(FireDatabaseConstants.LOG_OUT_STATUS)) {
                                         Toast.makeText(getApplicationContext(), "You have logged out of this class. Please see an instructor", Toast.LENGTH_LONG).show();
                                     } else {
                                         Log.d(TAG, directoryID + " is logging into " + classID);
@@ -246,7 +249,7 @@ public class LoginActivity extends AppCompatActivity{
         ArrayList<String> log = new ArrayList<String>();
         log.add(initLog);
 
-        User user = new User(directoryID, "OK", log);
+        User user = new User(directoryID, FireDatabaseConstants.OK_STATUS, log);
         dbInteraction.addNewStudent(classID, user);
     }
 }

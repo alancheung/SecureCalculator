@@ -1,10 +1,16 @@
 package edu.umd.cs.securecalculator;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -24,13 +30,14 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * @author CMDann. Modified by UMD students.
  * (https://github.com/CMDann/Simple-Android-Calculator)
  */
-public class Calculator extends AppCompatActivity {
-
+public class Calculator extends AppCompatActivity implements NetworkStateReceiver.NetworkStateReceiverListener {
+	private final String TAG = getClass().getSimpleName();
 	private final String SDK_VERSION = "1";
 	private final int MENUITEM_CLOSE = 300;
 	private static final int SWIPE_MIN_DISTANCE = 120;
@@ -48,7 +55,7 @@ public class Calculator extends AppCompatActivity {
 	private String classID = "";
 
     private boolean validFinish;
-
+	private NetworkStateReceiver networkReceiver;
 
 	/*
 	 * Edit Text and Button object initialization for simple calculator design.
@@ -116,15 +123,18 @@ public class Calculator extends AppCompatActivity {
 		directoryID =  String.valueOf(intent.getExtras().get(DIRECTORY_ID_EXTRA));
 		classID = String.valueOf(intent.getExtras().get(CLASS_ID_EXTRA));
 
-
         // Init Firebase DB
         fireDB = FirebaseDatabase.getInstance();
         database = fireDB.getReference();
 
 		//Logging in sets student status to OK
 		dbInteraction.updateStatus(classID,directoryID,FireDatabaseConstants.OK_STATUS);
-
 		appendToLog(getCurrentTime()+" - onCreate: Calculator view created.");
+
+		// Get connectivity manager
+		networkReceiver = new NetworkStateReceiver();
+		networkReceiver.addListener((NetworkStateReceiver.NetworkStateReceiverListener) this);
+		this.registerReceiver(networkReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         validFinish = false;
 		//Kicks student out once Teacher ends class
@@ -902,4 +912,71 @@ public class Calculator extends AppCompatActivity {
 				});
 	}
 
+	@Override
+	public void networkAvailable() {
+		Log.d(TAG, "User is connected and we have no worries");
+		appendToLog(getCurrentTime()+ " - " + directoryID + " + is connect network connectivity.");
+	}
+
+	@Override
+	public void networkUnavailable() {
+		Log.d(TAG, directoryID + " is a cheater, cheater pumpkin eater.");
+		appendToLog(getCurrentTime() + " - " + directoryID + " has lost network connectivity.");
+		dbInteraction.updateStatus(classID, directoryID, FireDatabaseConstants.NOT_OK_STATUS);
+	}
+}
+
+class NetworkStateReceiver extends BroadcastReceiver {
+	protected List<NetworkStateReceiverListener> listeners;
+	protected Boolean connected;
+
+	public NetworkStateReceiver() {
+		listeners = new ArrayList<NetworkStateReceiverListener>();
+		connected = null;
+	}
+
+	public void onReceive(Context context, Intent intent) {
+		if(intent == null || intent.getExtras() == null)
+			return;
+
+		ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo ni = manager.getActiveNetworkInfo();
+
+		if(ni != null && ni.getState() == NetworkInfo.State.CONNECTED) {
+			connected = true;
+		} else if(intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY,Boolean.FALSE)) {
+			connected = false;
+		}
+
+		notifyStateToAll();
+	}
+
+	private void notifyStateToAll() {
+		for(NetworkStateReceiverListener listener : listeners)
+			notifyState(listener);
+	}
+
+	private void notifyState(NetworkStateReceiverListener listener) {
+		if(connected == null || listener == null)
+			return;
+
+		if(connected == true)
+			listener.networkAvailable();
+		else
+			listener.networkUnavailable();
+	}
+
+	public void addListener(NetworkStateReceiverListener l) {
+		listeners.add(l);
+		notifyState(l);
+	}
+
+	public void removeListener(NetworkStateReceiverListener l) {
+		listeners.remove(l);
+	}
+
+	public interface NetworkStateReceiverListener {
+		public void networkAvailable();
+		public void networkUnavailable();
+	}
 }

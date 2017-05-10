@@ -143,7 +143,7 @@ public class LandingFragment extends Fragment {
                                                         rb[1].setText(FireDatabaseConstants.HELP_STATUS);
                                                         rg.addView(rb[1]);
                                                         rb[2] = new RadioButton(getActivity());
-                                                        rb[2].setText(FireDatabaseConstants.LOG_OUT_STATUS);
+                                                        rb[2].setText(FireDatabaseConstants.NOT_OK_STATUS);
                                                         rg.addView(rb[2]);
                                                         rb[3] = new RadioButton(getActivity());
                                                         rb[3].setText(FireDatabaseConstants.DONE_STATUS);
@@ -161,7 +161,7 @@ public class LandingFragment extends Fragment {
                                                                             dbInteraction.updateStatus(classID,s.getDirectoryID(),FireDatabaseConstants.HELP_STATUS);
                                                                         }
                                                                         else if (rb[2].isChecked()) {
-                                                                            dbInteraction.updateStatus(classID,s.getDirectoryID(),FireDatabaseConstants.LOG_OUT_STATUS);
+                                                                            dbInteraction.updateStatus(classID,s.getDirectoryID(),FireDatabaseConstants.NOT_OK_STATUS);
                                                                         }
                                                                         else if (rb[3].isChecked()){
                                                                             dbInteraction.updateStatus(classID,s.getDirectoryID(),FireDatabaseConstants.DONE_STATUS);
