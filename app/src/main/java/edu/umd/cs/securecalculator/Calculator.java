@@ -875,6 +875,8 @@ public class Calculator extends AppCompatActivity implements NetworkStateReceive
         }
 
 		modifyUserStatus(status);
+		// unregister network receiver
+		unregisterReceiver(networkReceiver);
 	}
 
 	// Gets the current time and returns it in the format: hour:minute:second.millisecond
